@@ -22,7 +22,7 @@ from cadgen.geometry import boundary_edges, closest_points, is_sound, overlap_vo
 from lib import params as p  # noqa: E402
 from lib.rocket_parts import LOCK_ANGLE, fin_housing_radii  # noqa: E402
 
-PARTS = ["nose_cone", "coupler", "fin_can", "fin", "fin_lock_ring", "retainer_male", "retainer_female", "fit_gauge"]
+PARTS = ["nose_cone_hook", "nose_cone_open", "coupler", "fin_can", "fin", "fin_lock_ring", "retainer_male", "retainer_female", "fit_gauge"]
 BUILD_HEIGHT = 250.0  # Creality K1C printable height (the K1 Max has 300 mm)
 TOL = 0.02
 failures: list[str] = []
@@ -86,28 +86,47 @@ r_stub = (p.BODY_ID - p.GLUE_FIT) / 2
 r_bore = (p.MOTOR_TUBE_OD + p.MOTOR_TUBE_FIT) / 2
 h_floor, h_ceiling, h_top = fin_housing_radii()
 
-print("== Nose cone")
-nose = shapes["nose_cone"]
-bb = nose.bounding_box()
-check_range("total height (fits the K1C 250 mm Z with margin)", bb.size.Z, 240.0, BUILD_HEIGHT - 2.0)
-check("base radius", outer_radius(nose, p.NOSE_SHOULDER_LEN + 0.5, 0), R, 0.05)
-check("shoulder radius (slip fit)", outer_radius(nose, 20, 0), (p.BODY_ID - p.SLIP_FIT) / 2)
 r_sh = (p.BODY_ID - p.SLIP_FIT) / 2
 r_pilot = p.NOSE_HOOK_PILOT / 2
-for ang in (0, 90, 180, 270):  # between the gussets (they sit at 45 deg + k*90)
-    hits = _ray_hits(nose, 12.0, ang)
-    expect = [r_pilot, p.NOSE_HOOK_BOSS_D / 2, r_sh - p.NOSE_WALL, r_sh]
-    ok = len(hits) == 4 and all(abs(a - b) <= TOL for a, b in zip(hits, expect))
-    check_range(f"hook boss + shoulder wall section at {ang} deg (z=12): {[round(h, 3) for h in hits]}", float(ok), 1, 1)
-bulk = _ray_hits(nose, p.NOSE_BULKHEAD_THICKNESS / 2, 90)
-check_range("bulkhead solid from pilot hole to shoulder skin", float(len(bulk) == 2 and abs(bulk[0] - r_pilot) <= TOL
-            and abs(bulk[1] - r_sh) <= TOL), 1, 1)
-axis = sorted(tuple(v)[2] for v in (nose & bd.Edge.make_line((0, 0, -1), (0, 0, 40))).vertices())
-print(f"  axial probe hits (z): {[round(z, 3) for z in axis]}")
-check("pilot hole depth to drill-point tip", axis[0] if axis else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot)
-check("boss top", axis[1] if len(axis) > 1 else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot + p.NOSE_HOOK_BOSS_CAP)
-check("ogive wall inner radius at mid-length", bore_profile_radius(nose, 140, 90),
-      outer_radius(nose, 140, 90) - p.NOSE_WALL, 0.15)
+
+
+def axial_hits(shape: bd.Shape, x: float = 0.0, y: float = 0.0) -> list[float]:
+    """Z values where a vertical probe at (x, y), z = -1..40, crosses the material boundary."""
+    return sorted(tuple(v)[2] for v in (shape & bd.Edge.make_line((x, y, -1), (x, y, 40))).vertices())
+
+
+for variant in ("nose_cone_hook", "nose_cone_open"):
+    print(f"== Nose cone ({variant})")
+    nose = shapes[variant]
+    bb = nose.bounding_box()
+    check_range("total height (fits the K1C 250 mm Z with margin)", bb.size.Z, 240.0, BUILD_HEIGHT - 2.0)
+    check("base radius", outer_radius(nose, p.NOSE_SHOULDER_LEN + 0.5, 0), R, 0.05)
+    check("shoulder radius (slip fit)", outer_radius(nose, 20, 0), r_sh)
+    check("ogive wall inner radius at mid-length", bore_profile_radius(nose, 140, 90),
+          outer_radius(nose, 140, 90) - p.NOSE_WALL, 0.15)
+    if variant == "nose_cone_hook":
+        for ang in (0, 90, 180, 270):  # between the gussets (they sit at 45 deg + k*90)
+            hits = _ray_hits(nose, 12.0, ang)
+            expect = [r_pilot, p.NOSE_HOOK_BOSS_D / 2, r_sh - p.NOSE_WALL, r_sh]
+            ok = len(hits) == 4 and all(abs(a - b) <= TOL for a, b in zip(hits, expect))
+            check_range(f"hook boss + shoulder wall section at {ang} deg (z=12): {[round(h, 3) for h in hits]}", float(ok), 1, 1)
+        bulk = _ray_hits(nose, p.NOSE_BULKHEAD_THICKNESS / 2, 90)
+        check_range("bulkhead solid from pilot hole to shoulder skin", float(len(bulk) == 2 and abs(bulk[0] - r_pilot) <= TOL
+                    and abs(bulk[1] - r_sh) <= TOL), 1, 1)
+        axis = axial_hits(nose)
+        print(f"  axial probe hits (z): {[round(z, 3) for z in axis]}")
+        check("pilot hole depth to drill-point tip", axis[0] if axis else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot)
+        check("boss top", axis[1] if len(axis) > 1 else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot + p.NOSE_HOOK_BOSS_CAP)
+    else:
+        bar = _ray_hits(nose, 5.0, 90)  # across the bar (it spans the base along X); starts inside it at r = 0
+        expect = [0.0, p.NOSE_BAR_WIDTH / 2, r_sh - p.NOSE_WALL, r_sh]
+        ok = len(bar) == 4 and all(abs(a - b) <= TOL for a, b in zip(bar, expect))
+        check_range(f"bar + shoulder wall section (z=5): {[round(h, 3) for h in bar]}", float(ok), 1, 1)
+        axis = axial_hits(nose)
+        print(f"  axial probe hits (z): {[round(z, 3) for z in axis]}")
+        check("bar ridge height", axis[-1] if axis else float("nan"), p.NOSE_BAR_HEIGHT)
+        beside = axial_hits(nose, 0.0, p.NOSE_BAR_WIDTH / 2 + 6.0)
+        check_range("base open beside the bar (probe crossings)", float(len(beside)), 0, 0)
 
 print("== Coupler")
 cp = shapes["coupler"]

@@ -12,7 +12,7 @@ from fin_can import fin_can
 from fin_lock_ring import fin_lock_ring
 from lib import params as p
 from lib.rocket_parts import LOCK_ANGLE, cap_engaged_angle, engine_stop_z, fin_housing_radii, make_tube
-from nose_cone import nose_cone
+from nose_cone_hook import nose_cone_hook
 from retainer_female import retainer_female
 from retainer_male import retainer_male
 
@@ -54,7 +54,9 @@ def scorpio_assembly():
         make_tube(p.BODY_OD, p.BODY_ID, p.UPPER_TUBE_LEN, "upper_tube_not_printed", p.TUBE_COLOR)
         .moved(bd.Pos(0, 0, z_upper_bottom))
     )
-    children.append(nose_cone().moved(bd.Pos(0, 0, z_upper_top - p.NOSE_SHOULDER_LEN)))
+    nose = nose_cone_hook().moved(bd.Pos(0, 0, z_upper_top - p.NOSE_SHOULDER_LEN))  # or nose_cone_open
+    nose.label = "nose_cone"
+    children.append(nose)
     return bd.Compound(children=children, label="scorpio_assembly")
 
 

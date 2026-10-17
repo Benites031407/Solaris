@@ -35,8 +35,13 @@ NOSE_SHOULDER_LEN = 40.0
 NOSE_WALL = 2.0
 NOSE_SOLID_TIP = 16.0   # solid length below the tip (cavity stops here)
 NOSE_STEP_RISE = 1.5    # inner shoulder-to-ogive step starts this far above the joint
-# Shock-cord attachment: a bulkhead closes the shoulder base and carries a central
-# boss with a blind pilot hole (open at the bottom) for a screw hook / screw eye.
+# Two shock-cord attachments, one model each:
+#  - nose_cone_open: open shoulder base with a ridge-topped bar to tie the cord
+#    around (the cavity stays reachable for clay nose weight)
+NOSE_BAR_WIDTH = 8.0
+NOSE_BAR_HEIGHT = 10.0
+#  - nose_cone_hook: a bulkhead closes the shoulder base and carries a central
+#    boss with a blind pilot hole (open at the bottom) for a screw hook / screw eye.
 NOSE_BULKHEAD_THICKNESS = 4.0
 NOSE_HOOK_PILOT = 2.8       # pilot for a ~3.5 mm (#6) screw hook in ABS; 3.2 for a 4 mm thread
 NOSE_HOOK_DEPTH = 20.0      # usable thread depth from the shoulder base

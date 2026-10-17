@@ -169,8 +169,17 @@ def cap_engaged_angle() -> float:
 # --- parts ------------------------------------------------------------------------------
 
 
-def make_nose_cone() -> bd.Part:
-    """Hollow tangent-ogive nose cone with a blunted tip, shoulder and a screw-hook mount."""
+NOSE_MOUNTS = ("hook", "open")
+
+
+def make_nose_cone(mount: str) -> bd.Part:
+    """Hollow tangent-ogive nose cone with a blunted tip and shoulder.
+
+    mount="hook": closed base with a boss and pilot hole for a screw hook.
+    mount="open": open base with a bar across it to tie the shock cord.
+    """
+    if mount not in NOSE_MOUNTS:
+        raise ValueError(f"mount must be one of {NOSE_MOUNTS}, got {mount!r}")
     R, L, rn, t = R_BODY, p.NOSE_OGIVE_LEN, p.NOSE_TIP_RADIUS, p.NOSE_WALL
     zb = p.NOSE_SHOULDER_LEN  # ogive base (shoulder below it, base on the bed)
     rho = (R * R + L * L) / (2 * R)
@@ -225,6 +234,14 @@ def make_nose_cone() -> bd.Part:
         bd.Edge.make_line(V(0, 0, z_top + r_top), V(0, 0, -1)),
     ]
     nose = solid - bd.revolve(bd.Face(bd.Wire(cavity_edges)), bd.Axis.Z)
+    if mount == "open":
+        # Shock-cord bar across the open shoulder base (printed on the bed, ridge-topped).
+        w, h = p.NOSE_BAR_WIDTH, p.NOSE_BAR_HEIGHT
+        sec = [(-w / 2, 0), (w / 2, 0), (w / 2, h - 2), (w / 4, h), (-w / 4, h), (-w / 2, h - 2)]
+        bar_face = bd.Face(bd.Wire.make_polygon([V(0, y, z) for y, z in sec], close=True))
+        bar = bd.extrude(bar_face, amount=r_sh_in + 1.0, dir=(1, 0, 0), both=True)
+        bar = bar & bd.Cylinder(r_sh_in + 1.0, h + 1, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+        return _finish(nose + bar, "nose_cone_open")
 
     # Shock-cord attachment: bulkhead across the shoulder base (printed on the bed)
     # and a central boss with a blind pilot hole for a screw hook. Bulkhead, 45 deg
@@ -240,7 +257,7 @@ def make_nose_cone() -> bd.Part:
     z_boss = z_tip + p.NOSE_HOOK_BOSS_CAP
     r_wall = r_sh_in + 0.5  # reaches into the shoulder wall
     fillet = 3.5
-    mount = _revolve_rz([
+    hook_mount = _revolve_rz([
         (r_pilot + 0.5, 0), (r_wall, 0), (r_wall, t_b), (r_boss + fillet, t_b), (r_boss, t_b + fillet),
         (r_boss, z_boss), (0, z_boss), (0, z_tip), (r_pilot, z_hole), (r_pilot, 0.5),
     ])
@@ -248,8 +265,8 @@ def make_nose_cone() -> bd.Part:
         V(r_boss - 0.5, 0, t_b - 0.5), V(r_wall, 0, t_b - 0.5), V(r_wall, 0, t_b + 8.0), V(r_boss - 0.5, 0, z_boss - 2.0),
     ], close=True)), amount=p.NOSE_HOOK_RIB_THICKNESS / 2, dir=(0, 1, 0), both=True)
     for i in range(p.NOSE_HOOK_RIBS):
-        mount += bd.Rot(0, 0, 45.0 + i * 360.0 / p.NOSE_HOOK_RIBS) * rib
-    return _finish(nose + mount, "nose_cone")
+        hook_mount += bd.Rot(0, 0, 45.0 + i * 360.0 / p.NOSE_HOOK_RIBS) * rib
+    return _finish(nose + hook_mount, "nose_cone_hook")
 
 
 def make_coupler() -> bd.Part:

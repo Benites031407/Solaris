@@ -13,12 +13,15 @@ All other dimensions are measured from the photos and scaled to that body diamet
 ## Files to print
 
 All parts are exported **in print orientation** (drop them on the plate as they are).
+Both nose versions are 247.5 mm tall (they fit the K1C's 250 mm and the K1 Max) and share the same shell;
+they differ only in how the shock cord attaches. Print one of them.
 Use `3MF/` (preferred) or `STL/`; `STEP/` holds the exact CAD.
 
 | Part | File | Qty | Orientation | Notes |
 | --- | --- | --- | --- | --- |
 | Fit gauge | `fit_gauge` | 1 | wide end down | **Print first** (see Fits) |
-| Nose cone | `nose_cone` | 1 | tip up | 247.5 mm tall: fits the K1C (250 mm) and the K1 Max. Closed base with a screw-hook hole |
+| Nose cone, hook version | `nose_cone_hook` | 1 (either version) | tip up | Closed base with a pilot hole for a screw hook / screw eye |
+| Nose cone, open version | `nose_cone_open` | 1 (either version) | tip up | Open base with a bar to tie the shock cord; room inside for clay nose weight |
 | Coupler | `coupler` | 1 | upright | Band with 1010 rail guide and 1/4 in lug |
 | Fin can | `fin_can` | 1 | aft face down | 3 external fin housings, motor bore, engine stop, aft guide and lug |
 | Fin lock ring | `fin_lock_ring` | 1 | wide (aft) face down | Twist-lock ring that holds the fins (no glue) |
@@ -39,7 +42,7 @@ Start from your ABS preset (`Generic ABS @K1C`, `GTMax ABS @K1 Max` or
 | Nozzle / bed | 250–260 °C / 100–105 °C, lid closed, let the chamber warm ~10 min |
 | Part cooling | 0–20 % (30–50 % for bridges/overhangs) |
 | Layer height | 0.20 mm (0.16 mm for the two retainers: cleaner threads) |
-| Walls | 3 (Estes' recommendation); **4 walls on the nose cone** (solid material around the hook screw); **5 walls + 40 % infill for both retainers** |
+| Walls | 3 (Estes' recommendation); **4 walls on `nose_cone_hook`** (solid material around the hook screw); **5 walls + 40 % infill for both retainers** |
 | Infill | 10–15 % gyroid (Estes uses 7 %; ABS fin can is stronger at 15 %) |
 | Brim | 5 mm on the nose cone and the fins (tall, narrow footprints); ≥ 3 mm elsewhere |
 | Supports | Off |
@@ -70,7 +73,7 @@ the step marked *d*, set `BODY_ID = d`. If the motor tube stops on the bore step
 - 2 in body tube (OD 50.8 mm): lower section 229 mm and upper section 457 mm. Any split works; the coupler joins them.
 - 29 mm motor-mount tube cut to **114 mm**. It runs from the engine stop to the aft end of the male retainer.
 - 24 in parachute, shock cord, aramid leader, recovery wadding.
-- A small steel **screw hook or screw eye** for the nose: ≈3.5 mm (#6) wood-screw thread, 10–20 mm of thread. A closed eye is safer than an open hook, or close the hook's gap with pliers after tying the cord. For a 4 mm thread, open the hole to 3.2 mm (or set `NOSE_HOOK_PILOT = 3.2` and regenerate).
+- For `nose_cone_hook` only, a small steel **screw hook or screw eye**: ≈3.5 mm (#6) wood-screw thread, 10–20 mm of thread. A closed eye is safer than an open hook, or close the hook's gap with pliers after tying the cord. For a 4 mm thread, open the hole to 3.2 mm (or set `NOSE_HOOK_PILOT = 3.2` and regenerate).
 - Motors: Estes E16-4 or F15-6 (29 × 114 mm).
 
 ## Assembly
@@ -89,12 +92,15 @@ the stub's grooves at both positions. No glue is needed, so fins can be swapped.
 5. **Lower tube:** glue it onto the stub down to the lock ring. Keep glue off the ring and leave it free to turn; slip a sheet of paper between tube and ring while the glue sets, then pull it out.
 6. **Fins:** slide each fin's rail along the body tube into a ring notch and down its channel until it stops at the aft end. Twist the ring 60° until it clicks: the fins are locked. To swap fins, twist back and slide them out forward.
 7. **Coupler and upper tube:** glue the coupler between the two tubes. Line up the coupler's rail guide and lug with the fin can's (same angles, centred between two fins) along a straight edge.
-8. **Nose:** the nose base is closed by a bulkhead with a Ø2.8 mm × 20 mm pilot hole in a ribbed boss. Screw the hook in by hand until its shank sits on the base (a drop of CA in the hole first locks it), then tie the shock cord to it. The shoulder is a slip fit, so add a turn of tape if it is loose.
+8. **Nose:** the shoulder is a slip fit, so add a turn of tape if it is loose.
+   - `nose_cone_hook`: the base is closed by a bulkhead with a Ø2.8 mm × 20 mm pilot hole in a ribbed boss. Screw the hook in by hand until its shank sits on the base (a drop of CA in the hole first locks it), then tie the shock cord to it.
+   - `nose_cone_open`: tie the shock cord around the bar across the open base. Clay nose weight can be pressed into the cavity if you ever need more stability.
 9. **Fly:** check that the ring is clicked into the locked position, insert the motor and screw the cap on; the cap's lip holds the motor.
 
 **Stability (estimate, `checks/stability.py`):**
 - CP is ≈ 874 mm from the nose tip, i.e. ≈ 168 mm above the fin-can aft face.
-- Static margin is 2.49 cal at lift-off with the E16-4 and 2.17 cal with the F15-6 (3.0–3.1 cal at burnout).
+- Static margin with `nose_cone_hook`: 2.49 cal at lift-off with the E16-4 and 2.17 cal with the F15-6 (3.0–3.1 cal at burnout).
+- With the ~7 g lighter `nose_cone_open`: 2.31 cal (E16-4) and 1.99 cal (F15-6) at lift-off.
 - Before flying, weigh your parts and confirm that the loaded balance point is at least 51 mm (1 caliber) ahead of the CP. Ideally also check in OpenRocket.
 
 Follow the NAR model-rocket safety code and use certified motors only. ABS (Tg ≈ 105 °C)
@@ -102,9 +108,9 @@ tolerates motor heat better than PLA. Retire any part with layer splits.
 
 ## What was verified
 
-- `checks/check_parts.py` (57 checks, all pass):
+- `checks/check_parts.py` (64 checks, all pass):
   - Every part is one valid, sound, closed solid that sits on Z = 0 and fits 250 mm Z.
-  - Key dimensions are measured on the saved STEPs: diameters, bores, nose hook boss and pilot-hole depth, fin-housing channel and aft stop, stub grooves, ring notches and nubs, engine stop, thread crest, nose height.
+  - Key dimensions are measured on the saved STEPs: diameters, bores, both nose versions (hook boss and pilot-hole depth; cord bar and open base), fin-housing channel and aft stop, stub grooves, ring notches and nubs, engine stop, thread crest, nose height.
   - Assembly: no interference between any parts.
   - Clearances: fin rail to housing 0.18 mm; fin to locked ring 0.20 mm; thread flanks 0.247 mm (design 0.25); ring, tube, retainer, motor tube, coupler and nose seated.
   - Fin lock, with a fin moved rigidly:
