@@ -1,4 +1,4 @@
-"""Hollow tangent-ogive nose cone; print tip-up (shoulder on the bed)."""
+"""Hollow tangent-ogive nose cone with a screw-hook mount; print tip-up (base on the bed)."""
 
 from cadgen import step, stl, threemf
 

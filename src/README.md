@@ -2,10 +2,11 @@
 
 | Script | Output | Purpose |
 | --- | --- | --- |
-| nose_cone.py | STEP/STL/3MF nose_cone | Hollow tangent-ogive nose cone, shoulder and shock-cord bar |
+| nose_cone.py | STEP/STL/3MF nose_cone | Hollow tangent-ogive nose cone, shoulder, closed base with a screw-hook boss |
 | coupler.py | STEP/STL/3MF coupler | Body-tube coupler band with 1010 rail guide and 1/4 in launch lug |
-| fin_can.py | STEP/STL/3MF fin_can | Fin can: 3 T-slots, motor bore, engine stop, aft guide + lug, cord anchor |
+| fin_can.py | STEP/STL/3MF fin_can | Fin can: 3 external fin housings, motor bore, engine stop, aft guide + lug, cord anchor, detent-grooved stub |
 | fin.py | STEP/STL/3MF fin | One fin with T-rail root (print 3) |
+| fin_lock_ring.py | STEP/STL/3MF fin_lock_ring | Twist-lock ring that holds the fins in their housings |
 | plate_fins_x3.py | STL/3MF plate_fins_x3 | The 3 fins pre-arranged on one plate |
 | retainer_male.py | STEP/STL/3MF retainer_male | Threaded male motor retainer (glued on the motor tube) |
 | retainer_female.py | STEP/STL/3MF retainer_female | Knurled screw-on retainer cap |
@@ -18,7 +19,7 @@ Build from the project root (`CG` is the pinned text-to-cad runtime):
 
 ```bash
 CG="uvx --no-config --managed-python --python 3.13 --from cadgen==0.7.21"
-for m in nose_cone coupler fin_can fin plate_fins_x3 retainer_male retainer_female fit_gauge scorpio_assembly; do
+for m in nose_cone coupler fin_can fin fin_lock_ring plate_fins_x3 retainer_male retainer_female fit_gauge scorpio_assembly; do
   $CG python src/$m.py
 done
 $CG python checks/check_parts.py   # soundness, dimensions, fits, interference

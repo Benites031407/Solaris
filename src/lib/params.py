@@ -35,32 +35,57 @@ NOSE_SHOULDER_LEN = 40.0
 NOSE_WALL = 2.0
 NOSE_SOLID_TIP = 16.0   # solid length below the tip (cavity stops here)
 NOSE_STEP_RISE = 1.5    # inner shoulder-to-ogive step starts this far above the joint
-NOSE_BAR_WIDTH = 8.0    # shock-cord bar across the shoulder base
-NOSE_BAR_HEIGHT = 10.0
+# Shock-cord attachment: a bulkhead closes the shoulder base and carries a central
+# boss with a blind pilot hole (open at the bottom) for a screw hook / screw eye.
+NOSE_BULKHEAD_THICKNESS = 4.0
+NOSE_HOOK_PILOT = 2.8       # pilot for a ~3.5 mm (#6) screw hook in ABS; 3.2 for a 4 mm thread
+NOSE_HOOK_DEPTH = 20.0      # usable thread depth from the shoulder base
+NOSE_HOOK_BOSS_D = 12.0
+NOSE_HOOK_BOSS_CAP = 4.0    # solid material above the hole tip
+NOSE_HOOK_RIBS = 4          # gussets from the boss to the shoulder wall
+NOSE_HOOK_RIB_THICKNESS = 2.0
 
 # --- Body tube coupler --------------------------------------------------------
 COUPLER_STUB_LEN = 38.0
 COUPLER_BAND_LEN = 26.0
 
 # --- Fin can -------------------------------------------------------------------
-FIN_CAN_LEN = 118.0     # main body, body-tube diameter
-FIN_CAN_STUB_LEN = 26.0
+FIN_CAN_LEN = 118.0     # main body, body-tube diameter (fin housings run its full length)
+FIN_CAN_STUB_LEN = 30.0 # lock ring (5 mm) + 25 mm of body-tube engagement
 FIN_COUNT = 3
 FIN_ANGLE0 = 0.0        # first fin; the others follow every 360 / FIN_COUNT
-FIN_SLOT_TOP = 115.0    # slots open at the aft face, closed (stop) here
 AFT_GUIDE_LEN = 24.0    # aft rail guide / launch lug length
 ENGINE_STOP_LEDGE = 1.7     # flat thrust ledge width inside the bore
 ENGINE_BLOCK_BORE = 24.0    # ejection passage through the engine block
 CORD_ANCHOR_HOLE = 4.0      # aramid cord hole in the internal anchor rib
+# External T-channel fin housings (as on the Estes part): fins slide in from the
+# FORWARD end, riding over the body tube, and stop on the closed aft end.
+FIN_HOUSING_FLOOR_R = 25.7  # channel floor plane; above the body tube (25.4) so rails clear it
+FIN_HOUSING_LIP = 1.8       # lip over the rail flange (>= 1.6 mm even at the crowned edge)
+FIN_HOUSING_WALL = 1.6      # side walls
+FIN_HOUSING_CROWN = 0.3     # lip tops slope down outward
+FIN_HOUSING_AFT_STOP = 3.0  # closed aft end of each channel
 
-# --- Fin (T-rail root that slides into the fin-can slot) -----------------------
+# --- Fin lock ring (twist 60 deg: notches over the housings = open, between = locked)
+LOCK_RING_THICKNESS = 5.0
+LOCK_RING_CLEARANCE = 0.2   # radial, ring bore to fin-can stub
+LOCK_RING_NOTCH_WIDTH = 7.8 # passes the fin rail flange (7.0)
+LOCK_RING_NOTCH_R = 25.6    # notch floor; the continuous inner band is below it
+LOCK_RING_FAIRING_R = 27.6  # forward face outer radius (fairing cone down toward the tube)
+DETENT_COUNT = 3            # flexing fingers in the ring
+DETENT_GROOVES = 6          # vertical grooves on the stub, every 60 deg
+DETENT_DEPTH = 0.8          # groove depth = nub height (45 deg flanks)
+DETENT_BEAM_THICKNESS = 1.2 # meets the 1.2 mm FDM wall; ~1 % bending strain at full flex
+DETENT_BEAM_ARC = 29.0      # finger length along the bore
+DETENT_RELIEF = 0.8         # gap behind the finger (> nub interference 0.6)
+
+# --- Fin (T-rail root that slides into a fin-can housing) ----------------------
 FIN_THICKNESS = 3.0
-FIN_FLANGE_WIDTH = 8.0
-FIN_FLANGE_THICKNESS = 2.4
-FIN_FLANGE_INNER_R = 18.4   # flange inner face radius when seated
-SLOT_CLEARANCE = 0.2        # per side, fin rail to slot
-FIN_ROOT_LEN = 114.6
-# Planform from the photos, as (span from body surface, height above aft edge).
+FIN_FLANGE_WIDTH = 7.0
+FIN_FLANGE_THICKNESS = 1.8
+SLOT_CLEARANCE = 0.2        # per side, fin rail to housing channel
+FIN_ROOT_LEN = 114.6        # = FIN_CAN_LEN - FIN_HOUSING_AFT_STOP - 0.4 axial play
+# Planform from the photos, as (span from the housing top, height above aft edge).
 # The concave leading edge is the R ~173 mm arc that best fits the 7 traced
 # points (0.74 mm rms) from the root top through FIN_LE_MID to FIN_LE_TIP.
 FIN_LE_MID = (41.5, 56.0)

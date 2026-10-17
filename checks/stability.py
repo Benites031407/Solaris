@@ -20,11 +20,12 @@ sys.path.insert(0, str(ROOT / "src"))
 from cadgen import read_scene  # noqa: E402
 
 from lib import params as p  # noqa: E402
+from lib.rocket_parts import fin_housing_radii  # noqa: E402
 
 ABS = 1.04e-3  # g/mm3
 # Effective fill of each printed part at 3 walls + ~10 % gyroid (thin shells print ~solid).
 FILL = {"nose_cone": 0.95, "coupler": 0.95, "fin_can": 0.45, "fin": 0.9,
-        "retainer_male": 0.9, "retainer_female": 0.9}
+        "retainer_male": 0.9, "retainer_female": 0.9, "fin_lock_ring": 0.9}
 TUBE_G_PER_MM = 0.035     # ~2 in heavy-wall kraft body tube
 MOTOR_TUBE_G = 8.0
 RECOVERY_G = 35.0         # 24 in parachute, shock cord, aramid leader, wadding
@@ -61,7 +62,7 @@ def x_from_tip(z: float) -> float:
 # --- Barrowman centre of pressure -------------------------------------------------
 d = p.BODY_OD
 R = d / 2
-nose_len = z_tip - (p.FIN_CAN_LEN + p.LOWER_TUBE_LEN + p.COUPLER_BAND_LEN + p.UPPER_TUBE_LEN)
+nose_len = z_tip - (p.FIN_CAN_LEN + p.LOCK_RING_THICKNESS + p.LOWER_TUBE_LEN + p.COUPLER_BAND_LEN + p.UPPER_TUBE_LEN)
 cn_nose, x_nose = 2.0, 0.466 * nose_len  # tangent ogive
 
 # Fin planform -> equivalent trapezoid with the same root, span and area.
@@ -78,15 +79,17 @@ def te_z(s: float) -> float:  # trailing edge, then the slanted tip edge
     return 0.0 if s <= s_te else z_tip_le * (s - s_te) / (s_tip - s_te)
 
 
-span = p.FIN_LE_TIP[0]
+span = p.FIN_LE_TIP[0] + (fin_housing_radii()[2] - R)  # fin sits on a housing above the body
 n = 2000
-area = sum((le_z((i + 0.5) * span / n) - te_z((i + 0.5) * span / n)) * span / n for i in range(n))
+s_fin = p.FIN_LE_TIP[0]
+area = sum((le_z((i + 0.5) * s_fin / n) - te_z((i + 0.5) * s_fin / n)) * s_fin / n for i in range(n))
+area += (span - s_fin) * p.FIN_ROOT_LEN  # housing strip between body and fin root
 cr = p.FIN_ROOT_LEN
 ct = max(2 * area / span - cr, 0.0)
 x_r = cr - p.FIN_LE_TIP[1]  # sweep of the leading edge at the tip, measured aft
 l_m = math.hypot(span, x_r + ct / 2 - cr / 2)
 cn_fins = (1 + R / (span + R)) * (4 * p.FIN_COUNT * (span / d) ** 2) / (1 + math.sqrt(1 + (2 * l_m / (cr + ct)) ** 2))
-fin_root_le = x_from_tip(p.FIN_SLOT_TOP - 0.2)
+fin_root_le = x_from_tip(p.FIN_CAN_LEN - 0.2)
 x_fins = fin_root_le + x_r * (cr + 2 * ct) / (3 * (cr + ct)) + ((cr + ct) - cr * ct / (cr + ct)) / 6
 x_cp = (cn_nose * x_nose + cn_fins * x_fins) / (cn_nose + cn_fins)
 

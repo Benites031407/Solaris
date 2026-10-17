@@ -20,8 +20,9 @@ from cadgen import read_scene, read_step  # noqa: E402
 from cadgen.geometry import boundary_edges, closest_points, is_sound, overlap_volume, topology_errors  # noqa: E402
 
 from lib import params as p  # noqa: E402
+from lib.rocket_parts import LOCK_ANGLE, fin_housing_radii  # noqa: E402
 
-PARTS = ["nose_cone", "coupler", "fin_can", "fin", "retainer_male", "retainer_female", "fit_gauge"]
+PARTS = ["nose_cone", "coupler", "fin_can", "fin", "fin_lock_ring", "retainer_male", "retainer_female", "fit_gauge"]
 BUILD_HEIGHT = 250.0  # Creality K1C printable height (the K1 Max has 300 mm)
 TOL = 0.02
 failures: list[str] = []
@@ -83,6 +84,7 @@ for name in PARTS:
 R = p.BODY_OD / 2
 r_stub = (p.BODY_ID - p.GLUE_FIT) / 2
 r_bore = (p.MOTOR_TUBE_OD + p.MOTOR_TUBE_FIT) / 2
+h_floor, h_ceiling, h_top = fin_housing_radii()
 
 print("== Nose cone")
 nose = shapes["nose_cone"]
@@ -90,7 +92,20 @@ bb = nose.bounding_box()
 check_range("total height (fits the K1C 250 mm Z with margin)", bb.size.Z, 240.0, BUILD_HEIGHT - 2.0)
 check("base radius", outer_radius(nose, p.NOSE_SHOULDER_LEN + 0.5, 0), R, 0.05)
 check("shoulder radius (slip fit)", outer_radius(nose, 20, 0), (p.BODY_ID - p.SLIP_FIT) / 2)
-check("shoulder wall inner radius", bore_profile_radius(nose, 20, 90), (p.BODY_ID - p.SLIP_FIT) / 2 - p.NOSE_WALL)
+r_sh = (p.BODY_ID - p.SLIP_FIT) / 2
+r_pilot = p.NOSE_HOOK_PILOT / 2
+for ang in (0, 90, 180, 270):  # between the gussets (they sit at 45 deg + k*90)
+    hits = _ray_hits(nose, 12.0, ang)
+    expect = [r_pilot, p.NOSE_HOOK_BOSS_D / 2, r_sh - p.NOSE_WALL, r_sh]
+    ok = len(hits) == 4 and all(abs(a - b) <= TOL for a, b in zip(hits, expect))
+    check_range(f"hook boss + shoulder wall section at {ang} deg (z=12): {[round(h, 3) for h in hits]}", float(ok), 1, 1)
+bulk = _ray_hits(nose, p.NOSE_BULKHEAD_THICKNESS / 2, 90)
+check_range("bulkhead solid from pilot hole to shoulder skin", float(len(bulk) == 2 and abs(bulk[0] - r_pilot) <= TOL
+            and abs(bulk[1] - r_sh) <= TOL), 1, 1)
+axis = sorted(tuple(v)[2] for v in (nose & bd.Edge.make_line((0, 0, -1), (0, 0, 40))).vertices())
+print(f"  axial probe hits (z): {[round(z, 3) for z in axis]}")
+check("pilot hole depth to drill-point tip", axis[0] if axis else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot)
+check("boss top", axis[1] if len(axis) > 1 else float("nan"), p.NOSE_HOOK_DEPTH + r_pilot + p.NOSE_HOOK_BOSS_CAP)
 check("ogive wall inner radius at mid-length", bore_profile_radius(nose, 140, 90),
       outer_radius(nose, 140, 90) - p.NOSE_WALL, 0.15)
 
@@ -105,26 +120,42 @@ check("length", bb.size.Z, 2 * p.COUPLER_STUB_LEN + p.COUPLER_BAND_LEN)
 
 print("== Fin can")
 fc = shapes["fin_can"]
-check("body radius (270 deg, clear of slots/guides)", outer_radius(fc, 60, 270), R)
-check("stub radius", outer_radius(fc, p.FIN_CAN_LEN + 13, 270), r_stub)
+check("body radius (270 deg, clear of housings/guides)", outer_radius(fc, 60, 270), R)
+check("stub radius (between detent grooves)", outer_radius(fc, p.FIN_CAN_LEN + 13, 30), r_stub)
+check("stub detent groove bottom", outer_radius(fc, p.FIN_CAN_LEN + 13, 0), r_stub - p.DETENT_DEPTH)
 check("motor bore radius", bore_profile_radius(fc, 50), r_bore)
 z_stop = p.MOTOR_LEN - (p.MALE_BAND_LEN + p.MALE_THREAD_LEN)
 check("bore just below engine stop", bore_profile_radius(fc, z_stop - 0.3), r_bore)
 check_range("stop radius just above engine stop (< motor radius)", bore_profile_radius(fc, z_stop + 0.3),
             0.0, p.MOTOR_DIA / 2 - 0.5)
 check("ejection passage radius", bore_profile_radius(fc, z_stop + 3.5), p.ENGINE_BLOCK_BORE / 2)
-# Slot geometry at mid-height along the first fin's radial plane (y = 0 is the slot centre).
+# Fin housing: along the fin plane (y = 0) the channel and neck are open to the outside.
 hits = _ray_hits(fc, 60, p.FIN_ANGLE0)
-print(f"  slot ray hits along the first fin plane at z=60: {[round(h, 3) for h in hits]}")
-ch_in = p.FIN_FLANGE_INNER_R - p.SLOT_CLEARANCE
-check_range("slot channel starts at", hits[1] if len(hits) > 1 else float("nan"), ch_in - 0.01, ch_in + 0.01)
+print(f"  housing ray hits along the first fin plane at z=60: {[round(h, 3) for h in hits]}")
+check("housing channel floor (rails ride above the 25.4 mm tube)", hits[1] if len(hits) == 2 else float("nan"), h_floor)
+lip = _ray_hits(fc, 60, p.FIN_ANGLE0 + math.degrees(math.atan2(2.7, h_ceiling)))
+print(f"  ray through a housing lip at z=60: {[round(h, 3) for h in lip]}")
+check_range("housing lip over the rail flange (4 boundary crossings)", len(lip), 4, 4)
+aft = _ray_hits(fc, p.FIN_HOUSING_AFT_STOP / 2, p.FIN_ANGLE0)
+check_range("housing closed at the aft end (solid out to the top)", aft[-1] if len(aft) == 2 else float("nan"),
+            h_top, h_top + 0.5)
 
 print("== Fin")
 fn = shapes["fin"]
 bb = fn.bounding_box()
 check("root length", bb.size.Z, p.FIN_ROOT_LEN)
-check("span incl. rail", bb.max.X - bb.min.X, p.FIN_LE_TIP[0] + (R - p.FIN_FLANGE_INNER_R))
+check("span incl. rail", bb.max.X - bb.min.X, p.FIN_LE_TIP[0] + (h_top - h_floor - p.SLOT_CLEARANCE))
 check("rail flange width", bb.size.Y, p.FIN_FLANGE_WIDTH)
+
+print("== Fin lock ring")
+ring = shapes["fin_lock_ring"]
+r_ring = r_stub + p.LOCK_RING_CLEARANCE
+check("thickness", ring.bounding_box().size.Z, p.LOCK_RING_THICKNESS)
+check("bore radius (clear of fingers and notches)", bore_profile_radius(ring, 2.5, 30), r_ring)
+check("outer radius (= housing top)", outer_radius(ring, 1.0, 30), h_top)
+notch = _ray_hits(ring, 1.0, 0)
+check("notch floor (inner band only)", notch[-1] if len(notch) == 2 else float("nan"), p.LOCK_RING_NOTCH_R)
+check("detent nub tip", bore_profile_radius(ring, 2.5, LOCK_ANGLE), r_ring - p.DETENT_DEPTH)
 
 print("== Retainers")
 male = shapes["retainer_male"]
@@ -165,7 +196,29 @@ def gap(la: str, lb: str, lo: float, hi: float, what: str) -> None:
     check_range(f"{what} ({la} / {lb})", d, lo, hi)
 
 
-gap("fin:1", "fin_can", 0.15, 0.25, "fin rail to slot clearance")
+gap("fin:1", "fin_can", 0.15, 0.25, "fin rail to housing clearance")
+gap("fin:1", "fin_lock_ring", 0.15, 0.25, "fin forward end to locked ring")
+gap("fin_lock_ring", "fin_can", 0.0, 1e-3, "lock ring seated on the fin can")
+gap("lower_tube_not_printed", "fin_lock_ring", 0.0, 1e-3, "lower tube end on the lock ring")
+
+print("== Fin lock function (fin:1, moved rigidly)")
+fin1, can, ring_locked = leaves["fin:1"], leaves["fin_can"], leaves["fin_lock_ring"]
+ring_open = ring_locked.rotate(bd.Axis.Z, -LOCK_ANGLE)
+radial = bd.Vector(math.cos(math.radians(p.FIN_ANGLE0)), math.sin(math.radians(p.FIN_ANGLE0)), 0)
+
+
+def moved(shape, v):
+    return shape.moved(bd.Location(tuple(v)))
+
+
+check_range("locked: 1 mm forward hits the ring (mm3)", overlap_volume(moved(fin1, (0, 0, 1.0)), ring_locked), 0.5, 1e9)
+check_range("aft: 0.5 mm back hits the housing stop (mm3)", overlap_volume(moved(fin1, (0, 0, -0.5)), can), 0.5, 1e9)
+check_range("outward: 0.5 mm radial pull hits the housing lips (mm3)", overlap_volume(moved(fin1, radial * 0.5), can), 0.5, 1e9)
+out = moved(fin1, (0, 0, 20.0))
+check_range("open: 20 mm forward clears the ring notch (mm3)", overlap_volume(out, ring_open), 0.0, 0.01)
+check_range("open: 20 mm forward clears the fin can (mm3)", overlap_volume(out, can), 0.0, 0.01)
+check_range("open: 20 mm forward rides over the body tube (mm3)", overlap_volume(out, leaves["lower_tube_not_printed"]), 0.0, 0.01)
+check_range("open ring clears the fin can (detents in grooves) (mm3)", overlap_volume(ring_open, can), 0.0, 0.01)
 # Flank clearance is measured mid-engagement only: at the open end the cap
 # deliberately seats against the male band chamfer.
 engage = bd.Pos(0, 0, -17.0) * bd.Box(60, 60, 8.0, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))

@@ -170,7 +170,7 @@ def cap_engaged_angle() -> float:
 
 
 def make_nose_cone() -> bd.Part:
-    """Hollow tangent-ogive nose cone with a blunted tip, shoulder and shock-cord bar."""
+    """Hollow tangent-ogive nose cone with a blunted tip, shoulder and a screw-hook mount."""
     R, L, rn, t = R_BODY, p.NOSE_OGIVE_LEN, p.NOSE_TIP_RADIUS, p.NOSE_WALL
     zb = p.NOSE_SHOULDER_LEN  # ogive base (shoulder below it, base on the bed)
     rho = (R * R + L * L) / (2 * R)
@@ -226,13 +226,30 @@ def make_nose_cone() -> bd.Part:
     ]
     nose = solid - bd.revolve(bd.Face(bd.Wire(cavity_edges)), bd.Axis.Z)
 
-    # Shock-cord bar across the shoulder base (printed on the bed, ridge-topped).
-    w, h = p.NOSE_BAR_WIDTH, p.NOSE_BAR_HEIGHT
-    sec = [(-w / 2, 0), (w / 2, 0), (w / 2, h - 2), (w / 4, h), (-w / 4, h), (-w / 2, h - 2)]
-    bar_face = bd.Face(bd.Wire.make_polygon([V(0, y, z) for y, z in sec], close=True))
-    bar = bd.extrude(bar_face, amount=r_sh_in + 1.0, dir=(1, 0, 0), both=True)
-    bar = bar & bd.Cylinder(r_sh_in + 1.0, h + 1, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
-    return _finish(nose + bar, "nose_cone")
+    # Shock-cord attachment: bulkhead across the shoulder base (printed on the bed)
+    # and a central boss with a blind pilot hole for a screw hook. Bulkhead, 45 deg
+    # fillet, boss, hole lead-in and drill-point tip are ONE revolved profile, so
+    # their junctions are profile vertices rather than boolean seams (a fillet
+    # cone fused onto the boss left open triangles in the mesh export). Gussets
+    # then tie the boss to the shoulder wall.
+    t_b = p.NOSE_BULKHEAD_THICKNESS
+    r_boss = p.NOSE_HOOK_BOSS_D / 2
+    r_pilot = p.NOSE_HOOK_PILOT / 2
+    z_hole = p.NOSE_HOOK_DEPTH
+    z_tip = z_hole + r_pilot
+    z_boss = z_tip + p.NOSE_HOOK_BOSS_CAP
+    r_wall = r_sh_in + 0.5  # reaches into the shoulder wall
+    fillet = 3.5
+    mount = _revolve_rz([
+        (r_pilot + 0.5, 0), (r_wall, 0), (r_wall, t_b), (r_boss + fillet, t_b), (r_boss, t_b + fillet),
+        (r_boss, z_boss), (0, z_boss), (0, z_tip), (r_pilot, z_hole), (r_pilot, 0.5),
+    ])
+    rib = bd.extrude(bd.Face(bd.Wire.make_polygon([
+        V(r_boss - 0.5, 0, t_b - 0.5), V(r_wall, 0, t_b - 0.5), V(r_wall, 0, t_b + 8.0), V(r_boss - 0.5, 0, z_boss - 2.0),
+    ], close=True)), amount=p.NOSE_HOOK_RIB_THICKNESS / 2, dir=(0, 1, 0), both=True)
+    for i in range(p.NOSE_HOOK_RIBS):
+        mount += bd.Rot(0, 0, 45.0 + i * 360.0 / p.NOSE_HOOK_RIBS) * rib
+    return _finish(nose + mount, "nose_cone")
 
 
 def make_coupler() -> bd.Part:
@@ -254,10 +271,38 @@ def make_coupler() -> bd.Part:
     return _finish(body, "coupler")
 
 
-def fin_slot_radii() -> tuple[float, float]:
-    """Inner and outer radius of the T-slot flange channel."""
-    r_in = p.FIN_FLANGE_INNER_R - p.SLOT_CLEARANCE
-    return r_in, p.FIN_FLANGE_INNER_R + p.FIN_FLANGE_THICKNESS + p.SLOT_CLEARANCE
+def fin_housing_radii() -> tuple[float, float, float]:
+    """Channel floor, channel ceiling (lip underside at the side walls) and housing top."""
+    floor = p.FIN_HOUSING_FLOOR_R
+    ceiling = floor + p.FIN_FLANGE_THICKNESS + 2 * p.SLOT_CLEARANCE
+    return floor, ceiling, ceiling + p.FIN_HOUSING_LIP
+
+
+def _fin_housing() -> bd.Part:
+    """One external T-channel on +X: closed at the aft end, open at the forward face."""
+    floor, ceiling, top = fin_housing_radii()
+    neck = p.FIN_THICKNESS / 2 + p.SLOT_CLEARANCE
+    ch = p.FIN_FLANGE_WIDTH / 2 + p.SLOT_CLEARANCE
+    hw = ch + p.FIN_HOUSING_WALL
+    crown, corner = p.FIN_HOUSING_CROWN, 0.8
+    # Lip tops slope from `top` at the slot mouth down to the outer corners; the
+    # outline's apex sits on that line at y = 0 so the neck cut adds no shared vertex.
+    apex = top + crown * neck / (hw - corner - neck)
+    x_in = R_BODY - 1.5
+    outline = _xy_polygon([
+        (x_in, -hw), (top - crown - corner, -hw), (top - crown, -hw + corner), (apex, 0.0),
+        (top - crown, hw - corner), (top - crown - corner, hw), (x_in, hw),
+    ])
+    lean = SHOULDER_SLOPE * (ch - neck)  # lips thicken toward the neck, matching the fin flange
+    cavity = _zextrude(_xy_polygon([
+        (floor, -ch), (ceiling, -ch), (ceiling - lean, -neck), (apex + 1.0, -neck),
+        (apex + 1.0, neck), (ceiling - lean, neck), (ceiling, ch), (floor, ch),
+    ]), p.FIN_HOUSING_AFT_STOP, p.FIN_CAN_LEN + 1.0)
+    return _zextrude(outline, 0.0, p.FIN_CAN_LEN) - cavity
+
+
+def _stub_radius() -> float:
+    return (p.BODY_ID - p.GLUE_FIT) / 2
 
 
 def engine_stop_z() -> float:
@@ -266,9 +311,10 @@ def engine_stop_z() -> float:
 
 
 def make_fin_can() -> bd.Part:
-    """Fin can: T-slots for 3 fins, motor-tube bore with engine block, aft lug and guide."""
+    """Fin can: 3 external fin housings, motor-tube bore with engine block, aft lug and
+    guide, and a detent-grooved stub that carries the fin lock ring."""
     R = R_BODY
-    r_stub = (p.BODY_ID - p.GLUE_FIT) / 2
+    r_stub = _stub_radius()
     r_stub_in = r_stub - p.STUB_WALL
     r_bore = (p.MOTOR_TUBE_OD + p.MOTOR_TUBE_FIT) / 2
     r_ledge = r_bore - p.ENGINE_STOP_LEDGE
@@ -285,17 +331,20 @@ def make_fin_can() -> bd.Part:
         (r_blk, z_stop + (r_ledge - r_blk)), (r_ledge, z_stop), (r_bore, z_stop), (r_bore, c),
     ])
 
-    # T-slots, open at the aft face so the fins slide in from below.
-    ch_in, ch_out = fin_slot_radii()
-    neck_half = p.FIN_THICKNESS / 2 + p.SLOT_CLEARANCE
-    ch_half = p.FIN_FLANGE_WIDTH / 2 + p.SLOT_CLEARANCE + 0.05
-    lean = SHOULDER_SLOPE * (ch_half - neck_half)  # matches the fin's shoulder lean
-    slot = _zextrude(_xy_polygon([
-        (ch_in, -ch_half), (ch_out, -ch_half), (ch_out - lean, -neck_half), (R + 1.0, -neck_half),
-        (R + 1.0, neck_half), (ch_out - lean, neck_half), (ch_out, ch_half), (ch_in, ch_half),
-    ]), -1.0, p.FIN_SLOT_TOP)
+    # External T-channel housings: fins enter from the forward face, under the
+    # lock ring's notches, and stop on the closed aft end.
+    housing = _fin_housing()
     for i in range(p.FIN_COUNT):
-        body -= bd.Rot(0, 0, p.FIN_ANGLE0 + i * 360.0 / p.FIN_COUNT) * slot
+        body += bd.Rot(0, 0, p.FIN_ANGLE0 + i * 360.0 / p.FIN_COUNT) * housing
+
+    # 45 deg detent grooves along the stub, one every 60 deg: the lock ring's
+    # fingers click into them in both the open and the locked position. They
+    # start just above the ring seat so no cut face lies on the fin-can top face.
+    d = p.DETENT_DEPTH
+    groove = _zextrude(_xy_polygon([(r_stub - d, 0.0), (r_stub + 0.5, -(d + 0.5)), (r_stub + 0.5, d + 0.5)]),
+                       z_top + 0.3, z_stub + 1.0)
+    for i in range(p.DETENT_GROOVES):
+        body -= bd.Rot(0, 0, p.FIN_ANGLE0 + i * 360.0 / p.DETENT_GROOVES) * groove
 
     body += rail_guide_1010(0.0, p.AFT_GUIDE_LEN, p.RAIL_GUIDE_ANGLE, chamfer_bottom=False)
     body += launch_lug(0.0, p.AFT_GUIDE_LEN, p.LAUNCH_LUG_ANGLE, chamfer_bottom=False)
@@ -314,7 +363,8 @@ def make_fin_can() -> bd.Part:
 
 
 def make_fin() -> bd.Part:
-    """One fin standing on its trailing edge; the T-rail root runs along x < 0."""
+    """One fin standing on its trailing edge. x = 0 is the housing top; the T-rail
+    root (x < 0) rides in the housing channel, above the body tube's surface."""
     t = p.FIN_THICKNESS
     V = bd.Vector
     root_top = V(0, 0, p.FIN_ROOT_LEN)
@@ -328,7 +378,8 @@ def make_fin() -> bd.Part:
         bd.Edge.make_line(root_top, V(0, 0, 0)),
     ]
     web = bd.extrude(bd.Face(bd.Wire(edges)), amount=t / 2, dir=(0, 1, 0), both=True)
-    x_fl_in = p.FIN_FLANGE_INNER_R - R_BODY
+    floor, _, top = fin_housing_radii()
+    x_fl_in = floor + p.SLOT_CLEARANCE - top
     x_fl_out = x_fl_in + p.FIN_FLANGE_THICKNESS
     w = p.FIN_FLANGE_WIDTH / 2
     lean = SHOULDER_SLOPE * (w - t / 2)  # flange slightly thinner at the neck
@@ -337,6 +388,42 @@ def make_fin() -> bd.Part:
         (0.0, t / 2), (x_fl_out - lean, t / 2), (x_fl_out, w), (x_fl_in, w),
     ]), 0.0, p.FIN_ROOT_LEN)
     return _finish(web + rail, "fin")
+
+
+LOCK_ANGLE = 360.0 / (2 * p.FIN_COUNT)  # twist from open (notches on the fins) to locked
+
+
+def make_fin_lock_ring() -> bd.Part:
+    """Twist-lock ring, printed aft face down, that rides on the fin-can stub.
+
+    Its notches (local 0/120/240 deg) pass the fin rails when lined up with the
+    housings; turned LOCK_ANGLE, solid ring covers the channel ends. Three flexing
+    fingers with 45 deg nubs click into the stub grooves at both positions.
+    """
+    r_in = _stub_radius() + p.LOCK_RING_CLEARANCE
+    _, _, r_out = fin_housing_radii()
+    t, c = p.LOCK_RING_THICKNESS, 0.4
+    ring = _revolve_rz([
+        (r_in + c, 0), (r_out - c, 0), (r_out, c), (r_out, 2.0), (p.LOCK_RING_FAIRING_R, t),
+        (r_in, t), (r_in, c),
+    ])
+    half = p.LOCK_RING_NOTCH_WIDTH / 2
+    notch = _zprism(p.LOCK_RING_NOTCH_R, r_out + 1.0, -half, half, -1.0, t + 1.0)
+    # Finger = the ring band between the bore and an arc relief slot behind it.
+    r_slot = r_in + p.DETENT_BEAM_THICKNESS + p.DETENT_RELIEF / 2
+    arc_deg = math.degrees(p.DETENT_BEAM_ARC / r_slot)
+    d = p.DETENT_DEPTH
+    nub = _zextrude(_xy_polygon([(r_in - d, 0.0), (r_in + 0.3, -(d + 0.3)), (r_in + 0.3, d + 0.3)]), 0.5, t)
+    for i in range(p.FIN_COUNT):
+        a = i * 360.0 / p.FIN_COUNT
+        ring -= bd.Rot(0, 0, a) * notch
+    for i in range(p.DETENT_COUNT):
+        a = LOCK_ANGLE + i * 360.0 / p.DETENT_COUNT
+        arc = bd.Edge.make_circle(r_slot, start_angle=a - arc_deg / 2, end_angle=a + arc_deg / 2)
+        slot = bd.SlotArc(arc, p.DETENT_RELIEF)
+        ring -= bd.Pos(0, 0, -1.0) * bd.extrude(slot, amount=t + 2.0)
+        ring += bd.Rot(0, 0, a) * nub
+    return _finish(ring, "fin_lock_ring")
 
 
 def make_retainer_male() -> bd.Part:
