@@ -20,9 +20,11 @@ from cadgen import read_scene, read_step  # noqa: E402
 from cadgen.geometry import boundary_edges, closest_points, is_sound, overlap_volume, topology_errors  # noqa: E402
 
 from lib import params as p  # noqa: E402
-from lib.rocket_parts import LOCK_ANGLE, fin_housing_radii  # noqa: E402
+from lib.rocket_parts import (  # noqa: E402
+    LOCK_ANGLE, door_joint_z, door_levels, fin_housing_radii, make_servo_dummy, nose_geom, servo_pose,
+)
 
-PARTS = ["nose_cone_hook", "nose_cone_open", "coupler", "fin_can", "fin", "fin_lock_ring", "retainer_male", "retainer_female", "fit_gauge"]
+PARTS = ["nose_cone_hook", "nose_cone_open", "nose_cone_door_housing", "nose_cone_door", "coupler", "fin_can", "fin", "fin_lock_ring", "retainer_male", "retainer_female", "fit_gauge"]
 BUILD_HEIGHT = 250.0  # Creality K1C printable height (the K1 Max has 300 mm)
 TOL = 0.02
 failures: list[str] = []
@@ -250,6 +252,87 @@ gap("coupler", "lower_tube_not_printed", 0.0, 1e-3, "coupler band on lower tube"
 gap("nose_cone", "upper_tube_not_printed", 0.0, 1e-3, "nose base on upper tube")
 total = bd.Compound(children=list(leaves.values())).bounding_box()
 check_range("assembled length (Estes: 1054 mm / 41.5 in)", total.size.Z, 1030.0, 1080.0)
+
+print("== Side-door nose (housing + door + SG90 envelope)")
+dscene = read_scene(str(ROOT / "STEP" / "nose_cone_door_assembly.step"))
+dl = {occ.label: dscene.resolve(occ.ref).shape().solids()[0] for occ in dscene.leaves()}
+print("  leaves:", sorted(dl))
+housing_d, door_d, servo_l = dl["nose_cone_door_housing"], dl["nose_cone_door"], dl["servo_sg90_not_printed"]
+springs = [dl["spring_not_printed:1"], dl["spring_not_printed:2"]]
+servo_open = make_servo_dummy(-p.SERVO_UNLOCK_ANGLE).solids()[0]
+for (la, a), (lb, b) in (
+    (("housing", housing_d), ("door", door_d)), (("housing", housing_d), ("servo latched", servo_l)),
+    (("door", door_d), ("servo latched", servo_l)), (("housing", housing_d), ("servo released", servo_open)),
+    (("door", door_d), ("servo released", servo_open)),
+):
+    check_range(f"no interference {la} / {lb} (mm3)", overlap_volume(a, b), 0.0, 0.01)
+check_range("door seated on the band (contact, mm)", closest_points(door_d, housing_d).distance, 0.0, 1e-3)
+for i, sp in enumerate(springs, 1):
+    # The real spring's base coils screw onto the collar; the envelope stops just outside it.
+    check_range(f"compressed spring {i} clear of the door pocket and the pin (mm3)",
+                overlap_volume(sp, door_d) + overlap_volume(sp, housing_d), 0.0, 0.05)
+    check_range(f"spring {i} bears on the split face (mm)", closest_points(sp, housing_d).distance, 0.0, 1e-3)
+    check_range(f"spring {i} seats on the pocket's funnel (gap to it, mm)", closest_points(sp, door_d).distance, 0.0, 0.5)
+sv = servo_pose()
+check_range("servo ears seated on the mounting plate (mm)", closest_points(servo_l, housing_d).distance, 0.0, 1e-3)
+
+
+def dmoved(shape, v):
+    return shape.moved(bd.Location(tuple(v)))
+
+
+check_range("latched: door pushed 1.5 mm outward hits the servo arm (mm3)",
+            overlap_volume(dmoved(door_d, (1.5, 0, 0)), servo_l), 0.5, 1e9)
+check_range("released: door pushed 3 mm outward clears the servo arm (mm3)",
+            overlap_volume(dmoved(door_d, (3.0, 0, 0)), servo_open), 0.0, 0.01)
+check_range("top: door pushed 1 mm outward is held by the tab inside the tip (mm3)",
+            overlap_volume(dmoved(door_d, (1.0, 0, 0)), housing_d), 0.5, 1e9)
+check_range("door lifted 1.2 mm hits the tip / pins (mm3)",
+            overlap_volume(dmoved(door_d, (0, 0, 1.2)), housing_d), 0.5, 1e9)
+check_range("door shifted 1 mm sideways hits the spring pins (mm3)",
+            overlap_volume(dmoved(door_d, (0, 1.0, 0)), housing_d), 0.5, 1e9)
+
+# Opening: once the arm drops, the door's bottom swings out about its top outer edge
+# (door centre line). A contact hinge may also lift the door a little; it must stay
+# within the joint gap.
+g = nose_geom()
+z_p = p.NOSE_DOOR_JOINT_Z
+for _ in range(30):  # outer surface meets the (gapped) joint plane on the door centre line
+    z_p = door_joint_z(g.r_offset(0.0, z_p)) - p.NOSE_DOOR_JOINT_GAP
+x_p = g.r_offset(0.0, z_p)
+probe = bd.Vertex(x_p, 0, door_levels()[0])
+hinge = bd.Axis((x_p, 0, z_p), (0, 1, 0))
+if probe.rotate(hinge, 5.0).center().X < x_p:  # pick the sense that swings the bottom outward
+    hinge = bd.Axis((x_p, 0, z_p), (0, -1, 0))
+assert probe.rotate(hinge, 5.0).center().X > x_p
+# Fly-off: the springs kick the bottom out and the door swings about its top until its
+# tab drops out of the tip; from then on it can leave in a straight line.
+def free_path(turned) -> bool:
+    return all(overlap_volume(dmoved(turned, (dx, 0, 0)), housing_d) <= 0.05 for dx in (1.0, 3.0, 6.0, 10.0, 15.0, 20.0))
+
+
+worst_lift, release = 0.0, None
+for ang in range(2, 62, 3):
+    turned = door_d.rotate(hinge, float(ang))
+    lift = next((i * 0.1 for i in range(0, 16)
+                 if overlap_volume(dmoved(turned, (0, 0, i * 0.1)), housing_d) <= 0.05
+                 and overlap_volume(dmoved(turned, (0, 0, i * 0.1)), servo_open) <= 0.05), float("inf"))
+    worst_lift = max(worst_lift, lift)
+    if lift == float("inf"):
+        print(f"  swing blocked at {ang} deg")
+        break
+    if free_path(turned):
+        release = ang
+        break
+print(f"  door swings clear (max lift {worst_lift:.1f} mm) and leaves once swung {release} deg")
+check_range("swing until release needs no more lift than the joint gap (mm)", worst_lift, 0.0, p.NOSE_DOOR_JOINT_GAP)
+check_range("fly-off: tab drops out of the tip after a swing of (deg)", float(release or 1e9), 0.0, 45.0)
+
+z_d0, z_f = door_levels()
+cavity = g.outer - g.shell
+room = (cavity & (bd.Pos(0, 0, z_f) * bd.Box(80, 80, 300, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))))
+room = room - housing_d - door_d
+print(f"  parachute compartment above the floors: {room.volume / 1000:.0f} cm3")
 
 print()
 if failures:

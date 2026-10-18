@@ -4,6 +4,9 @@
 | --- | --- | --- |
 | nose_cone_hook.py | STEP/STL/3MF nose_cone_hook | Nose cone, closed base with a screw-hook boss (used in the assembly) |
 | nose_cone_open.py | STEP/STL/3MF nose_cone_open | Nose cone, open base with a shock-cord bar |
+| nose_cone_door_housing.py | STEP/STL/3MF nose_cone_door_housing | Side-door nose housing: shoulder, band, half-shell, tip, servo mount, spring pins, ramp, tie eye |
+| nose_cone_door.py | STEP/STL/3MF nose_cone_door | Side-door nose door (print orientation) |
+| nose_cone_door_assembly.py | STEP/nose_cone_door_assembly.step | Side-door nose preview with an SG90 envelope latched and the springs compressed |
 | coupler.py | STEP/STL/3MF coupler | Body-tube coupler band with 1010 rail guide and 1/4 in launch lug |
 | fin_can.py | STEP/STL/3MF fin_can | Fin can: 3 external fin housings, motor bore, engine stop, aft guide + lug, cord anchor, detent-grooved stub |
 | fin.py | STEP/STL/3MF fin | One fin with T-rail root (print 3) |
@@ -22,7 +25,7 @@ Build from the project root (`CG` is the pinned text-to-cad runtime):
 
 ```bash
 CG="uvx --no-config --managed-python --python 3.13 --from cadgen==0.7.21"
-for m in nose_cone_hook nose_cone_open coupler fin_can fin fin_lock_ring plate_fins_x3 retainer_male retainer_female fit_gauge scorpio_assembly; do
+for m in nose_cone_hook nose_cone_open nose_cone_door_housing nose_cone_door nose_cone_door_assembly coupler fin_can fin fin_lock_ring plate_fins_x3 retainer_male retainer_female fit_gauge scorpio_assembly; do
   $CG python src/$m.py
 done
 $CG python checks/check_parts.py   # soundness, dimensions, fits, interference

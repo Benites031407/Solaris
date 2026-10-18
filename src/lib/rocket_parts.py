@@ -8,6 +8,7 @@ steeper, so no part needs support material.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 from cadgen import build123d as bd
 from cadgen import srgb
@@ -172,14 +173,26 @@ def cap_engaged_angle() -> float:
 NOSE_MOUNTS = ("hook", "open")
 
 
-def make_nose_cone(mount: str) -> bd.Part:
-    """Hollow tangent-ogive nose cone with a blunted tip and shoulder.
+@dataclass(frozen=True)
+class NoseGeom:
+    """The shared nose shell and the tangent-ogive constants behind it (r, z frame)."""
 
-    mount="hook": closed base with a boss and pilot hole for a screw hook.
-    mount="open": open base with a bar across it to tie the shock cord.
-    """
-    if mount not in NOSE_MOUNTS:
-        raise ValueError(f"mount must be one of {NOSE_MOUNTS}, got {mount!r}")
+    outer: bd.Part  # solid of revolution of the outside surface
+    shell: bd.Part  # outer minus the cavity
+    rho: float      # ogive arc radius
+    cr: float       # ogive arc centre radius coordinate (centre at z = zb)
+    zb: float       # ogive base / top of the shoulder
+    r_sh: float     # shoulder outer radius
+    r_sh_in: float  # shoulder inner radius
+    apex: float
+
+    def r_offset(self, d: float, z: float) -> float:
+        """Radius of the ogive surface offset inward by d, at height z."""
+        return self.cr + math.sqrt((self.rho - d) ** 2 - (z - self.zb) ** 2)
+
+
+def nose_geom() -> NoseGeom:
+    """Hollow tangent-ogive nose with a blunted tip and a slip-fit shoulder."""
     R, L, rn, t = R_BODY, p.NOSE_OGIVE_LEN, p.NOSE_TIP_RADIUS, p.NOSE_WALL
     zb = p.NOSE_SHOULDER_LEN  # ogive base (shoulder below it, base on the bed)
     rho = (R * R + L * L) / (2 * R)
@@ -233,7 +246,21 @@ def make_nose_cone(mount: str) -> bd.Part:
         bd.Edge.make_line(V(r_top, 0, z_top), V(0, 0, z_top + r_top)),  # 45 deg ceiling
         bd.Edge.make_line(V(0, 0, z_top + r_top), V(0, 0, -1)),
     ]
-    nose = solid - bd.revolve(bd.Face(bd.Wire(cavity_edges)), bd.Axis.Z)
+    shell = solid - bd.revolve(bd.Face(bd.Wire(cavity_edges)), bd.Axis.Z)
+    return NoseGeom(solid, shell, rho, cr, zb, r_sh, r_sh_in, apex)
+
+
+def make_nose_cone(mount: str) -> bd.Part:
+    """Hollow tangent-ogive nose cone with a blunted tip and shoulder.
+
+    mount="hook": closed base with a boss and pilot hole for a screw hook.
+    mount="open": open base with a bar across it to tie the shock cord.
+    """
+    if mount not in NOSE_MOUNTS:
+        raise ValueError(f"mount must be one of {NOSE_MOUNTS}, got {mount!r}")
+    g = nose_geom()
+    nose, r_sh_in = g.shell, g.r_sh_in
+    V = bd.Vector
     if mount == "open":
         # Shock-cord bar across the open shoulder base (printed on the bed, ridge-topped).
         w, h = p.NOSE_BAR_WIDTH, p.NOSE_BAR_HEIGHT
@@ -267,6 +294,260 @@ def make_nose_cone(mount: str) -> bd.Part:
     for i in range(p.NOSE_HOOK_RIBS):
         hook_mount += bd.Rot(0, 0, 45.0 + i * 360.0 / p.NOSE_HOOK_RIBS) * rib
     return _finish(nose + hook_mount, "nose_cone_hook")
+
+
+# --- side-door nose ---------------------------------------------------------------------
+
+DOOR_K = math.tan(math.radians(p.NOSE_DOOR_JOINT_ANGLE))
+
+
+def _align_min():
+    """Centred in x/y, base at z = 0 (a function: module level must not touch the kernel)."""
+    return (bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)
+
+
+def _xz_extrude(points, half_y: float = 40.0) -> bd.Part:
+    """Extrude an (x, z) polygon drawn at y = 0 across +/- half_y."""
+    face = bd.Face(bd.Wire.make_polygon([bd.Vector(x, 0, z) for x, z in points], close=True))
+    return bd.extrude(face, amount=half_y, dir=(0, 1, 0), both=True)
+
+
+def _x_cylinder(radius: float, x0: float, x1: float, y: float, z: float) -> bd.Part:
+    """Cylinder along +x from x0 to x1, centred on (y, z)."""
+    return bd.Pos(x0, y, z) * bd.Rot(0, 90, 0) * bd.Cylinder(radius, x1 - x0, align=_align_min())
+
+
+def _x_prism(yz_points, x0: float, x1: float) -> bd.Part:
+    """Prism along +x from x0 to x1 over a (y, z) polygon."""
+    face = bd.Face(bd.Wire.make_polygon([bd.Vector(x0, y, z) for y, z in yz_points], close=True))
+    return bd.extrude(face, amount=x1 - x0, dir=(1, 0, 0))
+
+
+def _x_diamond(half_diag: float, x0: float, x1: float, y: float, z: float) -> bd.Part:
+    """Square rotated 45 deg, along +x: a pin that prints sideways with 45 deg flanks."""
+    h = half_diag
+    return _x_prism([(y - h, z), (y, z - h), (y + h, z), (y, z + h)], x0, x1)
+
+
+def _x_teardrop(radius: float, x0: float, x1: float, y: float, z: float) -> bd.Part:
+    """Horizontal bore along +x with a 45 deg peaked roof, so it prints without support."""
+    s = radius / math.sqrt(2)
+    roof = _x_prism([(y - s, z + s), (y + s, z + s), (y, z + radius * math.sqrt(2))], x0, x1)
+    return _x_cylinder(radius, x0, x1, y, z) + roof
+
+
+def _x_cone(r0: float, r1: float, x0: float, x1: float, y: float, z: float) -> bd.Part:
+    """Cone along +x from radius r0 at x0 to r1 at x1, centred on (y, z)."""
+    return bd.Pos(x0, y, z) * bd.Rot(0, 90, 0) * bd.Cone(r0, r1, x1 - x0, align=_align_min())
+
+
+def door_spring_x() -> tuple[float, float, float]:
+    """Pocket bottom, funnel end and pin tip positions along x (door closed)."""
+    c = p.NOSE_DOOR_CLEARANCE
+    x_bottom = c + p.NOSE_DOOR_SPRING_POCKET_DEPTH
+    x_funnel = x_bottom + (p.NOSE_DOOR_SPRING_POCKET_D - p.NOSE_DOOR_PIN_HOLE_D) / 2
+    return x_bottom, x_funnel, x_funnel + p.NOSE_DOOR_PIN_TIP
+
+
+def _ogive_band(g: NoseGeom, d_out: float, d_in: float, z0: float, z1: float) -> bd.Part:
+    """Revolved band between the ogive offset inward by d_out and by d_in (d_out < d_in)."""
+    V = bd.Vector
+    zm = (z0 + z1) / 2
+
+    def pt(d: float, z: float) -> bd.Vector:
+        return V(g.r_offset(d, z), 0, z)
+
+    edges = [
+        bd.Edge.make_line(pt(d_in, z0), pt(d_out, z0)),
+        bd.Edge.make_three_point_arc(pt(d_out, z0), pt(d_out, zm), pt(d_out, z1)),
+        bd.Edge.make_line(pt(d_out, z1), pt(d_in, z1)),
+        bd.Edge.make_three_point_arc(pt(d_in, z1), pt(d_in, zm), pt(d_in, z0)),
+    ]
+    return bd.revolve(bd.Face(bd.Wire(edges)), bd.Axis.Z)
+
+
+def door_joint_z(x: float) -> float:
+    """Joint plane between the door top and the tip; rises outward on the door side (x > 0)."""
+    return p.NOSE_DOOR_JOINT_Z + DOOR_K * x
+
+
+def door_levels() -> tuple[float, float]:
+    """Door bottom (on the band) and floor-block top heights in the nose frame."""
+    z_d0 = p.NOSE_SHOULDER_LEN + p.NOSE_DOOR_BAND
+    return z_d0, z_d0 + p.NOSE_DOOR_FLOOR
+
+
+@dataclass(frozen=True)
+class ServoPose:
+    """SG90 placement in the nose frame: shaft along +x (radial, toward the door)."""
+
+    x_bottom: float  # servo bottom face
+    x_seat: float    # ear underside = door-side face of the mounting plate
+    x_horn: float    # horn mid-plane = latch groove centre
+    z_shaft: float
+    z_body_lo: float
+    z_body_hi: float
+    z_holes: tuple[float, float]
+
+
+def servo_pose() -> ServoPose:
+    z_d0, _ = door_levels()
+    x_horn = p.NOSE_DOOR_GROOVE_R
+    x_bottom = x_horn - p.SERVO_HORN_H
+    z_shaft = z_d0 + 4.0 - p.SERVO_ARM  # latched arm tip sits 4 mm up the groove
+    z_hi = z_shaft + p.SERVO_SHAFT_OFFSET
+    z_lo = z_hi - p.SERVO_BODY_L
+    zc = (z_lo + z_hi) / 2
+    return ServoPose(x_bottom, x_bottom + p.SERVO_EAR_H, x_horn, z_shaft, z_lo, z_hi,
+                     (zc - p.SERVO_HOLE_SPACING / 2, zc + p.SERVO_HOLE_SPACING / 2))
+
+
+def make_nose_door_housing() -> bd.Part:
+    """Side-door nose housing: shoulder, band, one half-shell and the tip, plus the
+    servo mount, spring pins, a ramp floor and a parachute tie eye. Print upright."""
+    g = nose_geom()
+    shell, outer = g.shell, g.outer
+    c = p.NOSE_DOOR_CLEARANCE
+    z_d0, z_f = door_levels()
+    sv = servo_pose()
+    reach = 40.0
+    housing = shell - _xz_extrude([(-c, z_d0), (reach, z_d0), (reach, door_joint_z(reach)), (-c, door_joint_z(-c))])
+    # Chamfer the band's top outer edge on the door side: the door's bottom swings past
+    # it. (The sharp edge there also met the shell's revolve seam, which the mesh
+    # exporter folded into non-manifold triangles.) The cutter rises past the band top
+    # so none of its faces is coplanar with it.
+    ch, e = p.NOSE_DOOR_BAND_CHAMFER, 0.3
+    ring = _revolve_rz([(R_BODY - ch - e, z_d0 + e), (R_BODY + 1.0, z_d0 + e), (R_BODY + 1.0, z_d0 - ch - 1.0)])
+    housing -= ring & _zprism(-c, reach, -reach, reach, z_d0 - 5.0, z_d0 + 5.0)
+
+    # One plate on the split face, printed from the bed: below the door it is thick
+    # enough to seat the servo ears on its door-side face; above, it carries the spring pins.
+    x_split = -c - p.NOSE_DOOR_SPLIT_PLATE
+    plate = _xz_extrude([(x_split, 0.0), (sv.x_seat, 0.0), (sv.x_seat, z_d0 - 0.5), (-c, z_d0 - 0.5),
+                         (-c, z_f), (x_split, z_f)]) & outer
+    sc = p.SERVO_CLEARANCE
+    plate -= _zprism(x_split - 1.0, sv.x_seat + 1.0, -(p.SERVO_BODY_W / 2 + sc), p.SERVO_BODY_W / 2 + sc,
+                     sv.z_body_lo - sc, sv.z_body_hi + sc)
+    for z in sv.z_holes:
+        plate -= _x_cylinder(p.SERVO_SCREW_PILOT / 2, x_split - 1.0, sv.x_seat + 1.0, 0.0, z)
+    housing += plate
+    # Spring pins on the split face: a collar the spring's base coils screw onto, then
+    # the guide pin, whose tip locates the door when it is closed.
+    _, _, x_tip = door_spring_x()
+    z_sp = z_d0 + p.NOSE_DOOR_SPRING_Z
+    for y in (-p.NOSE_DOOR_SPRING_Y, p.NOSE_DOOR_SPRING_Y):
+        housing += _x_diamond(p.NOSE_DOOR_PIN_COLLAR_D / 2, -c - 1.0, -c + p.NOSE_DOOR_PIN_COLLAR_LEN, y, z_sp)
+        housing += _x_diamond(p.NOSE_DOOR_PIN_D / 2, -c - 1.0, x_tip, y, z_sp)
+
+    # Compartment floor on the housing side: a ramp rising from the split edge at
+    # NOSE_DOOR_RAMP_ANGLE (self-supporting), so the packed chute slides out the door.
+    kr = math.tan(math.radians(p.NOSE_DOOR_RAMP_ANGLE))
+    t_v = p.NOSE_DOOR_RAMP_T / math.cos(math.radians(p.NOSE_DOOR_RAMP_ANGLE))
+
+    def ramp_top(x: float) -> float:
+        return z_f + kr * (-c - x)
+
+    ramp = _xz_extrude([(-c, z_f - t_v), (-c, z_f), (-reach, ramp_top(-reach)), (-reach, ramp_top(-reach) - t_v)]) & outer
+    # Tie eye standing on the ramp; its base follows the ramp (buried 0.5 mm above the
+    # ramp's underside), so it adds no downward-facing face.
+    x0, x1 = -12.0, -4.0
+    eye = _xz_extrude([(x0, ramp_top(x0) - t_v + 0.5), (x1, ramp_top(x1) - t_v + 0.5), (x1, ramp_top(x0) + 7.0),
+                       (x0, ramp_top(x0) + 7.0)], half_y=4.0)
+    housing += ramp + eye
+    housing -= bd.Pos(-8.0, 0, ramp_top(-8.0) + 4.5) * bd.Rot(90, 0, 0) * bd.Cylinder(p.NOSE_DOOR_EYE_HOLE / 2, 12.0)
+    housing -= bd.Pos(-17.5, 0, z_f - 15.0) * bd.Cylinder(p.NOSE_DOOR_CORD_HOLE / 2, 60.0, align=_align_min())
+    return _finish(housing, "nose_cone_door_housing")
+
+
+def make_nose_door() -> bd.Part:
+    """Side door, in print orientation (floor block on the bed); the assembly lifts it
+    by the band height. Its lip tucks inside the tip shell; its floor block takes the
+    two spring pockets and has the downward-open groove the servo arm latches into."""
+    g = nose_geom()
+    c = p.NOSE_DOOR_CLEARANCE
+    z_d0, z_f = door_levels()
+    gap = p.NOSE_DOOR_JOINT_GAP
+    reach = 40.0
+    zone = _xz_extrude([(c, z_d0), (reach, z_d0), (reach, door_joint_z(reach) - gap), (c, door_joint_z(c) - gap)])
+    door = (g.shell & zone) + (g.outer & _zprism(c, reach, -reach, reach, z_d0, z_f))
+
+    # Top tab inside the tip shell, rising from a bead that thickens the door wall
+    # inward just below the joint (50 deg underside). It sits at the door centre, where
+    # the inclined joint is highest, i.e. level with the hinge the door swings about.
+    zj, t = p.NOSE_DOOR_JOINT_Z, p.NOSE_WALL
+    d_lip_out = t + p.NOSE_DOOR_TONGUE_CLEARANCE
+    d_lip_in = d_lip_out + p.NOSE_DOOR_TONGUE_T
+    z0 = zj - p.NOSE_DOOR_BEAD - 2.0
+    z1 = door_joint_z(reach) + p.NOSE_DOOR_TONGUE + 2.0
+    w2 = p.NOSE_DOOR_TONGUE_W / 2
+    half = _zprism(c, reach, -w2, w2, z0 - 1.0, z1 + 1.0)
+
+    def slab(lo: float, hi: float) -> bd.Part:
+        return _xz_extrude([(c - 1.0, door_joint_z(c - 1.0) + lo), (reach, door_joint_z(reach) + lo),
+                            (reach, door_joint_z(reach) + hi), (c - 1.0, door_joint_z(c - 1.0) + hi)])
+
+    # Level tab top (no knife edge): the tab height is set at its mid radius.
+    x_tab = g.r_offset((d_lip_out + d_lip_in) / 2, door_joint_z(g.r_offset(0.0, zj)))
+    z_tab = door_joint_z(x_tab) + p.NOSE_DOOR_TONGUE
+    x_hi = (z_tab + p.NOSE_DOOR_BEAD - zj) / DOOR_K - 0.5
+    lip_zone = _xz_extrude([(c - 1.0, door_joint_z(c - 1.0) - p.NOSE_DOOR_BEAD), (x_hi, door_joint_z(x_hi) - p.NOSE_DOOR_BEAD),
+                            (x_hi, z_tab), (c - 1.0, z_tab)])
+    lip = _ogive_band(g, d_lip_out, d_lip_in, z0, z1) & lip_zone & half
+    bead = _ogive_band(g, t - 0.5, d_lip_in, z0, z1) & slab(-p.NOSE_DOOR_BEAD, -gap) & half
+    door += lip + bead
+
+    gw, gl = p.NOSE_DOOR_GROOVE_W / 2, p.NOSE_DOOR_GROOVE_LEN / 2
+    door -= _zprism(p.NOSE_DOOR_GROOVE_R - gw, p.NOSE_DOOR_GROOVE_R + gw, -gl, gl, z_d0 - 1.0, z_d0 + p.NOSE_DOOR_GROOVE_H)
+    # Spring pockets (teardrop bores), a 45 deg funnel and the pin-tip locating hole.
+    # The funnel runs 0.3 mm past the hole radius so its end disc does not land on the
+    # hole's wall (the exporter left open edges there).
+    x_bottom, x_funnel, x_tip = door_spring_x()
+    r_p, r_t = p.NOSE_DOOR_SPRING_POCKET_D / 2, p.NOSE_DOOR_PIN_HOLE_D / 2
+    z_sp = z_d0 + p.NOSE_DOOR_SPRING_Z
+    for y in (-p.NOSE_DOOR_SPRING_Y, p.NOSE_DOOR_SPRING_Y):
+        door -= _x_teardrop(r_p, c - 1.0, x_bottom, y, z_sp)
+        door -= _x_cone(r_p, r_t - 0.3, x_bottom - 0.01, x_funnel + 0.3, y, z_sp)
+        door -= _x_teardrop(r_t, x_bottom, x_tip + 0.5, y, z_sp)
+    # Optional tether lug on the floor, by the split edge: a thread through it to the
+    # tie eye keeps the ejected door from being lost.
+    t_r = p.NOSE_DOOR_TETHER_HOLE / 2
+    lug = _x_prism([(-3.0, z_f - 0.5), (3.0, z_f - 0.5), (3.0, z_f + 3.0), (0.0, z_f + 6.0), (-3.0, z_f + 3.0)], c + 1.0, c + 6.0)
+    lug -= bd.Pos(c + 3.5, 0, z_f + 2.8) * bd.Rot(90, 0, 0) * bd.Cylinder(t_r, 8.0)
+    door += lug
+    return _finish(bd.Pos(0, 0, -z_d0) * door, "nose_cone_door")
+
+
+def make_spring_dummies(extended: bool = False) -> list[bd.Part]:
+    """The two compression springs as tubes (not printed): closed, or at 18 mm free length."""
+    c = p.NOSE_DOOR_CLEARANCE
+    x_bottom, _, _ = door_spring_x()
+    z_sp = door_levels()[0] + p.NOSE_DOOR_SPRING_Z
+    length = 18.0 if extended else x_bottom + c
+    r_o = p.SPRING_OD_MAX / 2 - 0.1
+    r_i = max(p.SPRING_ID_MIN, p.NOSE_DOOR_PIN_COLLAR_D) / 2 + 0.05  # envelope clears the collar
+    springs = []
+    for i, y in enumerate((-p.NOSE_DOOR_SPRING_Y, p.NOSE_DOOR_SPRING_Y)):
+        coil = _x_cylinder(r_o, -c, -c + length, y, z_sp) - _x_cylinder(r_i, -c - 1.0, -c + length + 1.0, y, z_sp)
+        springs.append(_finish(coil, f"spring_not_printed:{i + 1}", "#9AA3AD"))
+    return springs
+
+
+def make_servo_dummy(arm_angle: float = 0.0) -> bd.Part:
+    """SG90-class servo envelope with a single-arm horn, for fit checks (not printed).
+    arm_angle 0 = latched (arm up in the door groove)."""
+    sv = servo_pose()
+    w2 = p.SERVO_BODY_W / 2
+    xb, xt = sv.x_bottom, sv.x_bottom + p.SERVO_BODY_H
+    ear = (p.SERVO_EAR_SPAN - p.SERVO_BODY_L) / 2
+    servo = _zprism(xb, xt, -w2, w2, sv.z_body_lo, sv.z_body_hi)
+    servo += _zprism(sv.x_seat, sv.x_seat + p.SERVO_EAR_T, -w2, w2, sv.z_body_lo - ear, sv.z_body_hi + ear)
+    x_horn0 = sv.x_horn - 0.9
+    servo += _x_cylinder(w2 - 0.3, xt - 0.1, xt + 2.5, 0.0, sv.z_shaft)        # gear tower
+    servo += _x_cylinder(2.4, xt + 2.4, x_horn0 + 0.1, 0.0, sv.z_shaft)        # output spline
+    horn = _x_cylinder(3.5, x_horn0, x_horn0 + 1.8, 0.0, sv.z_shaft)
+    horn += _zprism(x_horn0, x_horn0 + 1.8, -2.25, 2.25, sv.z_shaft, sv.z_shaft + p.SERVO_ARM)
+    horn = horn.rotate(bd.Axis((0, 0, sv.z_shaft), (1, 0, 0)), arm_angle)
+    return _finish(servo + horn, "servo_sg90_not_printed", p.MOTOR_TUBE_COLOR)
 
 
 def make_coupler() -> bd.Part:

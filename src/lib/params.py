@@ -50,6 +50,66 @@ NOSE_HOOK_BOSS_CAP = 4.0    # solid material above the hole tip
 NOSE_HOOK_RIBS = 4          # gussets from the boss to the shoulder wall
 NOSE_HOOK_RIB_THICKNESS = 2.0
 
+# --- Side-door nose (same mechanism as the reference Parachute_housing/door) ----
+# Housing = shoulder + a full band + one half-shell + the tip; door = the other
+# half-shell. The door's top lip tucks inside the tip shell, two spring pins locate
+# its floor block, and a micro servo's arm swinging up into a groove under that
+# block latches it. Turning the arm down frees the door's bottom: the springs kick
+# it out about the top, the door flies off and the parachute leaves sideways.
+NOSE_DOOR_BAND = 12.0          # full ring above the shoulder joint, below the door
+NOSE_DOOR_BAND_CHAMFER = 0.5   # band's top outer edge on the door side (door swings past it)
+NOSE_DOOR_FLOOR = 10.0         # door floor block = compartment floor height above the band
+NOSE_DOOR_JOINT_Z = 175.0      # door top / tip joint height at the split plane
+NOSE_DOOR_JOINT_ANGLE = 50.0   # joint rises outward so the tip's door side prints unsupported
+NOSE_DOOR_JOINT_GAP = 0.8      # vertical gap door top to tip (room to lift as it swings)
+NOSE_DOOR_CLEARANCE = 0.2      # per side at the split faces
+NOSE_DOOR_TONGUE = 4.0         # top tab height above the joint: holds ~1.4 mm inside the tip, and
+                               # lets go once the spring-kicked door has swung ~32 deg
+NOSE_DOOR_TONGUE_T = 1.6
+NOSE_DOOR_TONGUE_W = 10.0      # tab only at the door centre, level with the hinge: a full-width
+                               # lip on the inclined joint would hit the tip as the door swings
+NOSE_DOOR_TONGUE_CLEARANCE = 0.6  # tab to tip shell, lets the door swing ~15 deg
+NOSE_DOOR_BEAD = 4.0           # thickened band under the lip
+# Ejection springs where the reference has pegs: a pin on the housing's split face
+# carries each compression spring and still locates the door; the door's floor block
+# holds the spring pocket. Closed, the springs push the door against the servo arm;
+# released, they kick the door's bottom out.
+NOSE_DOOR_SPRING_Y = 10.0      # +/- from the centre line
+NOSE_DOOR_SPRING_Z = 5.0       # above the band (pin and pocket axis)
+SPRING_OD_MAX = 5.0            # spring must fit the pocket...
+SPRING_ID_MIN = 3.4            # ...and slide over the 3.0 mm pin (pen springs fit)
+NOSE_DOOR_SPRING_POCKET_D = 5.6
+NOSE_DOOR_SPRING_POCKET_DEPTH = 8.0  # closed spring length = depth + 2 x split clearance
+NOSE_DOOR_PIN_D = 3.0          # pin across corners (45 deg square: prints sideways cleanly)
+NOSE_DOOR_PIN_COLLAR_D = 3.8   # spring's base coils screw onto this collar
+NOSE_DOOR_PIN_COLLAR_LEN = 2.5
+NOSE_DOOR_PIN_TIP = 2.0        # pin tip engagement in the door's locating hole
+NOSE_DOOR_PIN_HOLE_D = 3.6
+NOSE_DOOR_TETHER_HOLE = 2.5    # optional thread lug so the ejected door is not lost
+NOSE_DOOR_SPLIT_PLATE = 3.0    # housing plate on the split face; carries the spring pins
+NOSE_DOOR_GROOVE_R = 14.7      # latch groove centre (= servo horn plane) from the axis
+NOSE_DOOR_GROOVE_W = 3.4       # reference uses 4.0; 3.4 leaves 0.8 mm play per side on a 1.8 mm horn arm
+NOSE_DOOR_GROOVE_H = 7.0
+NOSE_DOOR_GROOVE_LEN = 30.0
+NOSE_DOOR_RAMP_ANGLE = 50.0    # housing-side compartment floor slopes down toward the door
+NOSE_DOOR_RAMP_T = 2.5
+NOSE_DOOR_EYE_HOLE = 5.0       # parachute / shock-cord tie eye
+NOSE_DOOR_CORD_HOLE = 7.0      # shock cord up from the body through the ramp
+# SG90-class micro servo (also MG90S): 22.8 x 12.2 x 22.7 mm body, 32.3 mm ear span
+SERVO_BODY_L = 22.8
+SERVO_BODY_W = 12.2
+SERVO_BODY_H = 22.7
+SERVO_EAR_SPAN = 32.3
+SERVO_EAR_T = 2.5
+SERVO_EAR_H = 15.9             # ear underside above the servo's bottom face
+SERVO_HOLE_SPACING = 27.8
+SERVO_SHAFT_OFFSET = 5.9       # shaft centre from the near body end
+SERVO_HORN_H = 26.7            # horn mid-plane above the servo's bottom face
+SERVO_ARM = 15.0               # horn arm, shaft centre to latch tip (trim the horn to this)
+SERVO_UNLOCK_ANGLE = 60.0      # arm rotation that drops it out of the groove
+SERVO_CLEARANCE = 0.25
+SERVO_SCREW_PILOT = 1.8        # for the servo's 2 mm self-tapping ear screws
+
 # --- Body tube coupler --------------------------------------------------------
 COUPLER_STUB_LEN = 38.0
 COUPLER_BAND_LEN = 26.0
