@@ -1,0 +1,4 @@
+# Scratch: exploratory scripts, debug renders, DfAM reports
+/tmp/
+__pycache__/
+*.pyc

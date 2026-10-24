@@ -1,0 +1,6 @@
+# CAD and mesh exports are binary/generated: no diffs, no line-ending conversion
+*.step binary
+*.stl binary
+*.3mf binary
+*.png binary
+*.jpeg binary
