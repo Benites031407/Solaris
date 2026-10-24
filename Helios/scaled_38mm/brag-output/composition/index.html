@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Canarinho — assembly</title>
+    <!-- gsap is vendored into assets/vendor so the render never touches the network -->
+    <script src="assets/vendor/gsap.min.js"></script>
+    <!-- window.AUDIO_DATA: per-frame RMS + bass for the reactive layer -->
+    <script src="assets/music/audio-data.js"></script>
+    <style>
+      /* Fonts are shipped locally: a named font-family without an in-file
+         @font-face to a local file is a lint error, and a CDN font would make
+         the render depend on the network. */
+      @font-face {
+        font-family: "Canarinho Display";
+        src: url("assets/fonts/Oswald-Variable.ttf") format("truetype-variations");
+        font-weight: 200 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Canarinho Mono";
+        src: url("assets/fonts/IBMPlexMono-Medium.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+        font-display: block;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        /* same value as the renderer's BG, so type sits on the clips' own field
+           with no visible seam and a dip-to-bg transition is invisible */
+        background: #16191e;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #16191e;
+      }
+
+      /* ---- footage -------------------------------------------------------
+         #stage carries NO data-start, so the four <video data-start> children
+         are not "nested in a timed element" (that combination is a lint error
+         and really does show the wrong source frames). The audio-reactive
+         brightness is applied here, to the wrapper, for the same reason. */
+      #stage {
+        position: absolute;
+        inset: 0;
+        filter: brightness(1);
+      }
+      #stage video {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Vignette: the one element that breathes with the music. It sits over the
+         footage and under the type, so it deepens the frame edges without ever
+         touching text contrast. */
+      #vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.3;
+        background: radial-gradient(
+          ellipse 78% 72% at 50% 48%,
+          rgba(22, 25, 30, 0) 38%,
+          rgba(11, 13, 16, 0.72) 100%
+        );
+      }
+
+      /* Transition dip. Same colour as the background, so a dip reads as the
+         hardware fading out and the next shot fading in — a crossfade through
+         the film's own black rather than a wipe pasted on top. */
+      #dip {
+        position: absolute;
+        inset: 0;
+        background: #16191e;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ---- type ---------------------------------------------------------- */
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .lay {
+        position: absolute;
+      }
+      .d {
+        font-family: "Canarinho Display", sans-serif;
+        color: #edf1f6;
+        text-transform: uppercase;
+        font-weight: 600;
+        line-height: 0.94;
+        letter-spacing: 0.06em;
+      }
+      .m {
+        font-family: "Canarinho Mono", monospace;
+        color: #b8bfcc;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        line-height: 1.35;
+      }
+      .accent {
+        color: #c7b894;
+      }
+
+      /* a hairline rule that draws itself under a title — the only decoration */
+      .rule {
+        height: 2px;
+        background: #c7b894;
+        transform-origin: left center;
+      }
+      .rule-r {
+        transform-origin: right center;
+      }
+
+      /* Every position below was measured, not guessed: the clips render on a
+         flat #16191E field, so thresholding each frame against that colour gives
+         the exact pixel box the hardware occupies.  Union over every frame the
+         type is on screen -- so these are worst case, not a sampled guess:
+
+           clip / window      occupied rows      rows left free
+           stack  f0-135      250-725            0-249,  726-1079
+           stack  f126-269    324-726            0-323,  727-1079
+           bay    all         356-791            0-355,  792-1079
+           nose   f78-149     240-839            0-239,  840-1079   (see scene 4)
+           hero   all         332-722            0-331,  723-1079
+
+         Line boxes below are sized with .d line-height 0.94 and .m 1.35, and
+         every block clears its band with >=13px to spare including its slam
+         overshoot. */
+
+      /* Scene 1 — the parts fill 250-725, so the only place a 176px title fits
+         is the top band; the spec drops to the floor instead. */
+      #s1-name {
+        left: 132px;
+        top: 48px;
+        font-size: 176px;
+        letter-spacing: 0.1em;
+      }
+      #s1-rule {
+        left: 132px;
+        bottom: 200px;
+        width: 360px;
+      }
+      #s1-len {
+        left: 132px;
+        bottom: 128px;
+        font-size: 44px;
+      }
+
+      /* Scene 2 — the rocket closes onto the descending diagonal, never rising
+         above row 324, so the three specs live in the top band.  The block is
+         88 + 3x54 + 2x18 = 286 tall, clearing 324 by 38px. */
+      #s2-specs {
+        right: 132px;
+        top: 88px;
+        text-align: right;
+      }
+      #s2-specs .row {
+        font-size: 40px;
+        margin-bottom: 18px;
+      }
+      #s2-specs .row:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Scene 3 — the cut-away tube spans rows 356-791 across the full width, so
+         type goes above and below it.  The floor band is only 288px tall, which
+         is why the data rows are smaller here than in scene 2: the block is
+         48.6 + 14 + 48.6 + 14 + 59.4 = 185 tall and clears 791 by 32px. */
+      #s3-title {
+        left: 132px;
+        top: 118px;
+        font-size: 104px;
+      }
+      #s3-rule {
+        left: 132px;
+        top: 246px;
+        width: 480px;
+      }
+      #s3-data {
+        left: 132px;
+        bottom: 72px;
+      }
+      #s3-data .row {
+        font-size: 36px;
+        margin-bottom: 14px;
+      }
+      #s3-checks {
+        font-size: 44px;
+        letter-spacing: 0.2em;
+        margin-bottom: 0;
+      }
+
+      /* Scene 4 — the only scene where the safe area CHANGES mid-shot, because
+         the subject does.  Closed, the nose is a full-height column at x 584-1531
+         (rows 98-979); once the halves swing, the tip clears the top and rows
+         0-239 and 840-1079 open up completely.  So:
+           #s4-line  is on screen while the nose is SHUT and uses the left rail,
+                     x 124-554, clearing the column's leftmost pixel (584) by 30.
+           #s4-open / #s4-canopy appear only from clip frame 78 (t=15.84s), after
+                     the tip has dropped, and take the top and floor bands. */
+      #s4-line {
+        left: 124px;
+        top: 442px;
+        width: 430px;
+        font-size: 64px;
+      }
+      /* 250px here overflowed the top of the canvas by 29.9px at the peak of the
+         slam's scale-up, and dropping the scale instead pushed the descender side
+         into row 320 where the swinging shell reaches x 1472. The band is 319px
+         tall, so the type has to fit inside it WITH its overshoot: 184px gives
+         a 173px line box at 76-249 and ~39-286 at peak. */
+      #s4-open {
+        right: 138px;
+        top: 76px;
+        text-align: right;
+        font-size: 184px;
+        letter-spacing: 0.02em;
+      }
+      #s4-canopy {
+        right: 138px;
+        bottom: 140px;
+        text-align: right;
+        font-size: 44px;
+      }
+
+      /* Scene 5 — the hero rocket is far closer to horizontal than a diagonal:
+         it lies in rows 332-722 across x 228-1746, i.e. almost the full width.
+         There is no clear lower-left corner to put anything in.  So the title
+         takes the top band and the stat the floor, and the rocket is framed
+         between them -- the same top/floor split as scene 4's release. */
+      #s5-one {
+        right: 130px;
+        top: 96px;
+        text-align: right;
+        font-size: 168px;
+        letter-spacing: 0.09em;
+      }
+      #s5-rule {
+        right: 130px;
+        top: 274px;
+        width: 620px;
+      }
+      #s5-stat {
+        left: 130px;
+        bottom: 118px;
+        font-size: 34px;
+        letter-spacing: 0.18em;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="22.24"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- ================= FOOTAGE =================
+           Four caption-free 1920x1080/30 renders of the actual STLs.
+           stack.mp4 runs 0 -> 8.74 as ONE clip: scenes 1 and 2 are a single
+           continuous take and only the type changes at 4.20s, so it must not be
+           split into two video elements (that would restart the shot). -->
+      <div id="stage">
+        <video
+          id="v-stack"
+          class="clip"
+          src="assets/video/stack.mp4"
+          data-start="0"
+          data-duration="8.74"
+          data-track-index="0"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="v-bay"
+          class="clip"
+          src="assets/video/bay.mp4"
+          data-start="8.74"
+          data-duration="4.5"
+          data-track-index="0"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="v-nose"
+          class="clip"
+          src="assets/video/nose.mp4"
+          data-start="13.24"
+          data-duration="5"
+          data-track-index="0"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="v-hero"
+          class="clip"
+          src="assets/video/hero.mp4"
+          data-start="18.24"
+          data-duration="4"
+          data-track-index="0"
+          muted
+          playsinline
+        ></video>
+      </div>
+
+      <div id="vignette"></div>
+      <div id="dip"></div>
+
+      <!-- ================= SCENE 1 — PARTS IN THE DARK (0 -> 4.20) ========= -->
+      <section id="s1" class="clip" data-start="1.4" data-duration="2.8" data-track-index="1">
+        <h1 id="s1-name" class="lay d">Canarinho</h1>
+        <div id="s1-rule" class="lay rule rule-r"></div>
+        <p id="s1-len" class="lay m">983 mm</p>
+      </section>
+
+      <!-- ================= SCENE 2 — FIVE INTO ONE (4.20 -> 8.74) ========== -->
+      <section id="s2" class="clip" data-start="4.8" data-duration="3.94" data-track-index="1">
+        <div id="s2-specs" class="lay">
+          <p class="row m" id="s2-r1">5 printed sections</p>
+          <p class="row m" id="s2-r2">4 spigot joints</p>
+          <p class="row m" id="s2-r3">26.207 mm of spigot each</p>
+        </div>
+      </section>
+
+      <!-- ================= SCENE 3 — THE BRAIN GOES IN (8.74 -> 13.24) ===== -->
+      <section id="s3" class="clip" data-start="8.74" data-duration="4.5" data-track-index="1">
+        <h2 id="s3-title" class="lay d">The brain goes in</h2>
+        <div id="s3-rule" class="lay rule"></div>
+        <div id="s3-data" class="lay">
+          <p class="row m" id="s3-r1">ESP32 + BMP280</p>
+          <p class="row m" id="s3-r2">56.2 g of ABS</p>
+          <p class="row m accent" id="s3-checks">105 checks pass</p>
+        </div>
+      </section>
+
+      <!-- ================= SCENE 4 — ONE SERVO, ONE BAR (13.24 -> 18.24) === -->
+      <section id="s4" class="clip" data-start="13.34" data-duration="4.9" data-track-index="1">
+        <h2 id="s4-line" class="lay d">One servo. One bar. 30&deg;.</h2>
+        <p id="s4-open" class="lay d">100&deg;</p>
+        <p id="s4-canopy" class="lay m">762 mm canopy</p>
+      </section>
+
+      <!-- ================= SCENE 5 — ONE ROCKET. (18.24 -> 22.24) ========== -->
+      <section id="s5" class="clip" data-start="18.4" data-duration="3.84" data-track-index="1">
+        <h2 id="s5-one" class="lay d">One rocket.</h2>
+        <div id="s5-rule" class="lay rule rule-r"></div>
+        <p id="s5-stat" class="lay m">244 stations checked &middot; max error 0.0001 mm</p>
+      </section>
+
+      <!-- ================= AUDIO =================
+           Music bed on its own track; each SFX gets its own ascending index so
+           overlapping hits never share a lane. Volumes are the baseline; the
+           music fade is a timeline tween on `volume`. -->
+      <audio
+        id="bgm"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="22.24"
+        data-track-index="10"
+        data-volume="0.34"
+      ></audio>
+
+      <!-- s1: one soft low accent under the name, not a hit -->
+      <audio id="sfx-name" src="assets/sfx/impact/impactSoft_medium_003.ogg"
+             data-start="1.62" data-duration="0.14" data-track-index="11" data-volume="0.34"></audio>
+
+      <!-- s2: the four joints seating. Times come from the renderer's own easing
+           (start = 0.06 + i*0.15, window 0.28, 9.0s clip), nudged 0.06s early
+           because smootherstep makes the lock read before the maths ends. -->
+      <audio id="sfx-j1" src="assets/sfx/impact/impactWood_medium_000.ogg"
+             data-start="4.35" data-duration="0.33" data-track-index="12" data-volume="0.5"></audio>
+      <audio id="sfx-j2" src="assets/sfx/impact/impactWood_medium_002.ogg"
+             data-start="5.7" data-duration="0.33" data-track-index="13" data-volume="0.54"></audio>
+      <audio id="sfx-j3" src="assets/sfx/impact/impactWood_medium_003.ogg"
+             data-start="7.05" data-duration="0.33" data-track-index="14" data-volume="0.58"></audio>
+      <audio id="sfx-j4" src="assets/sfx/impact/impactWood_heavy_000.ogg"
+             data-start="8.4" data-duration="0.31" data-track-index="15" data-volume="0.66"></audio>
+
+      <!-- s3: the cut, then the sled seating on the bead at 11.98, then the checks -->
+      <audio id="sfx-cut3" src="assets/sfx/impact/impactSoft_medium_000.ogg"
+             data-start="8.74" data-duration="0.11" data-track-index="16" data-volume="0.6"></audio>
+      <audio id="sfx-seat" src="assets/sfx/impact/impactMetal_medium_001.ogg"
+             data-start="11.95" data-duration="0.14" data-track-index="17" data-volume="0.58"></audio>
+      <audio id="sfx-checks" src="assets/sfx/interface/drop_002.ogg"
+             data-start="12.05" data-duration="0.19" data-track-index="18" data-volume="0.4"></audio>
+
+      <!-- s4: the servo turning the bar, then SILENCE through the dwell, then the
+           springs winning. The release is the loudest single sound in the video. -->
+      <audio id="sfx-servo" src="assets/sfx/interface/switch_002.ogg"
+             data-start="13.74" data-duration="0.6" data-track-index="19" data-volume="0.34"></audio>
+      <audio id="sfx-release" src="assets/sfx/impact/impactPlate_medium_000.ogg"
+             data-start="14.44" data-duration="0.6" data-track-index="20" data-volume="0.82"></audio>
+
+      <!-- s5: one full-weight announcement on the slam. Every data-duration in
+           this block is the file's real length: a longer slot is silently clipped
+           to the media anyway, so writing 3.72 here only hid the fact that the
+           bell physically cannot ring past the 21.04s music fade — it decays at
+           20.00s and the last 2.2s is music falling to nothing under the closing
+           tolerance line, which is the better ending regardless.
+           Nothing at all on the closing line itself. -->
+      <audio id="sfx-hero" src="assets/sfx/impact/impactBell_heavy_000.ogg"
+             data-start="18.52" data-duration="1.48" data-track-index="21" data-volume="0.62"></audio>
+    </div>
+
+    <script>
+      const IN = "power3.out";
+      const tl = gsap.timeline({ paused: true });
+
+      /* ---------- helpers -------------------------------------------------
+         Every reveal is "slam in, then hold": a fast entrance (0.34-0.5s) and
+         then dead still. Nothing eases out, because cinematic type that drifts
+         after it lands reads as a template. */
+      function slam(sel, at, opts) {
+        const o = opts || {};
+        tl.fromTo(
+          sel,
+          { opacity: 0, y: o.y === undefined ? 26 : o.y, scale: o.scale === undefined ? 1.04 : o.scale },
+          { opacity: 1, y: 0, scale: 1, duration: o.dur || 0.42, ease: IN },
+          at,
+        );
+      }
+      function drawRule(sel, at, dur) {
+        tl.fromTo(sel, { scaleX: 0 }, { scaleX: 1, duration: dur || 0.5, ease: "power2.inOut" }, at);
+      }
+
+      /* ---------- Scene 1 — parts in the dark (0 -> 4.20) ---------------- */
+      slam("#s1-name", 1.64, { y: 34, scale: 1.06, dur: 0.52 }); // beat: 1.64s
+      drawRule("#s1-rule", 2.0, 0.62);
+      slam("#s1-len", 2.73, { y: 18, scale: 1 }); // beat: 2.73s
+      // the name and the length carry through the type change at 4.20 and leave
+      // together, so the continuous take never has an empty frame
+      tl.to(["#s1-name", "#s1-rule", "#s1-len"], { opacity: 0, duration: 0.34, ease: "power2.in" }, 3.86);
+
+      /* ---------- Scene 2 — five into one (4.20 -> 8.74) ----------------
+         beat-grid: spec 1 at 4.91s, spec 2 at 6.00s, spec 3 at 7.09s.
+         Every OTHER beat (the grid is ~0.55s at 110 BPM, which outruns reading);
+         each line gets ~1.09s alone and all three hold together to the cut. */
+      slam("#s2-r1", 4.91, { y: 20 }); // beat-grid: 4.91s
+      slam("#s2-r2", 6.0, { y: 20 }); // beat-grid: 6.00s
+      slam("#s2-r3", 7.09, { y: 20 }); // beat-grid: 7.09s
+
+      /* ---------- Scene 3 — the brain goes in (8.74 -> 13.24) ------------
+         beat-locked: 8.74s (strongCue intensity 0.985) — the first real hit in
+         the track, and the video's only hard cut. */
+      slam("#s3-title", 8.74, { y: 30, scale: 1.05, dur: 0.46 }); // beat-locked: 8.74s
+      drawRule("#s3-rule", 9.14, 0.5);
+      slam("#s3-r1", 9.9, { y: 18 });
+      slam("#s3-r2", 10.93, { y: 18 }); // beat-grid: 10.93s
+      // the sled finishes seating on the bead at 11.98 (ease(u/0.72) hits 1 at
+      // u=0.72 of a 4.5s clip starting 8.74), so the proof lands right after it
+      slam("#s3-checks", 12.05, { y: 18, scale: 1.03 });
+
+      /* ---------- Scene 4 — one servo, one bar (13.24 -> 18.24) ----------
+         The type never runs ahead of the mechanism: the line is up before the
+         bar sweeps (13.74-14.24), and 100 deg only lands once the halves are
+         already flying. */
+      slam("#s4-line", 13.4, { y: 24, scale: 1.03, dur: 0.48 });
+      tl.to("#s4-line", { opacity: 0, duration: 0.3, ease: "power2.in" }, 15.5);
+      slam("#s4-open", 15.84, { y: 0, scale: 1.1, dur: 0.4 }); // beat-locked: 15.84s
+      slam("#s4-canopy", 16.93, { y: 18 }); // beat-grid: 16.93s
+
+      /* ---------- Scene 5 — one rocket. (18.24 -> 22.24) ----------------- */
+      slam("#s5-one", 18.56, { y: 30, scale: 1.07, dur: 0.5 }); // beat-locked: 18.56s
+      drawRule("#s5-rule", 18.96, 0.66);
+      slam("#s5-stat", 20.19, { y: 16 }); // beat-grid: 20.19s
+
+      /* ---------- transitions -------------------------------------------
+         Dip through the composition's own background colour, which is the exact
+         colour every clip already renders behind the hardware — so the shot
+         fades out and the next fades in with no seam. The 8.74 cut is left as a
+         hard cut on purpose: it lands on the track's first strong hit. */
+      function dip(at) {
+        tl.to("#dip", { opacity: 1, duration: 0.17, ease: "power2.in" }, at - 0.17);
+        tl.to("#dip", { opacity: 0, duration: 0.21, ease: "power2.out" }, at);
+      }
+      dip(13.24); // scene 3 -> 4
+      dip(18.24); // scene 4 -> 5
+
+      /* ---------- music fade --------------------------------------------
+         A tween on `volume` REPLACES data-volume rather than scaling it, so every
+         target below is an ABSOLUTE gain on the same scale as data-volume="0.34",
+         not a multiplier: 0.34 bed -> 0.2 dip -> 0.38 lift -> 0 out.
+         The set() at 0 is not redundant. It pins the opening bed as a keyframe the
+         runtime's volume probe can see, so the first 14.9s cannot fall back to
+         unity gain and blast over the sparse hook. */
+      tl.set("#bgm", { volume: 0.34 }, 0);
+      tl.to("#bgm", { volume: 0.2, duration: 0.4, ease: "power2.out" }, 14.9);
+      tl.to("#bgm", { volume: 0.38, duration: 0.5, ease: "power2.in" }, 15.7);
+      tl.to("#bgm", { volume: 0, duration: 1.2, ease: "power2.in" }, 21.04);
+
+      /* ---------- audio-reactive ----------------------------------------
+         The only thing the music drives: how hard the hardware is rim-lit, and
+         how deep the frame edges sit. On a near-black field a small brightness
+         lift lands almost entirely on the lit metal, so the parts read as being
+         lit BY the track. Deliberately small — the viewer should notice the
+         mood, not the mechanism. No bars, no waveform, no particles.
+
+         Per-frame sampling with tl.call, not a tween: a tween would interpolate
+         between two numbers and react to nothing. */
+      if (window.AUDIO_DATA) {
+        const data = window.AUDIO_DATA;
+        const stage = document.getElementById("stage");
+        const vig = document.getElementById("vignette");
+        const fps = data.fps;
+
+        // smooth the raw envelope so the light breathes instead of flickering
+        const sm = function (a, k) {
+          const o = new Array(a.length);
+          for (let i = 0; i < a.length; i++) {
+            let s = 0,
+              c = 0;
+            for (let j = Math.max(0, i - k); j <= Math.min(a.length - 1, i + k); j++) {
+              s += a[j];
+              c++;
+            }
+            o[i] = s / c;
+          }
+          return o;
+        };
+        const R = sm(
+          data.frames.map(function (f) {
+            return f.rms;
+          }),
+          4,
+        );
+        const B = sm(
+          data.frames.map(function (f) {
+            return (f.bands[0] + f.bands[1]) * 0.5;
+          }),
+          3,
+        );
+
+        for (let f = 0; f < data.totalFrames; f++) {
+          tl.call(
+            (function (b, v) {
+              return function () {
+                stage.style.filter = "brightness(" + b + ")";
+                vig.style.opacity = v;
+              };
+            })(
+              (1 + 0.055 * R[f]).toFixed(4), // 1.000 -> 1.055
+              (0.3 + 0.11 * B[f]).toFixed(4), // 0.300 -> 0.410
+            ),
+            [],
+            f / fps,
+          );
+        }
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

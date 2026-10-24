@@ -1,0 +1,38 @@
+; SRM-100 research motor, APCP 70/16/14 (AP/Al/HTPB).  NOMINAL run of srm_ballistics.py:
+;   as-cast density 1718 kg/m^3, c* x 0.95, Mukunda-Paul erosive burning; 10495 N s in 4.76 s
+;   the ideal / bound run is N2523 -- the class is M/N borderline until a static fire measures it
+; not a certified motor.  Burn rate assumed a = 3.5 mm/s/MPa^n, n = 0.35: characterise it before relying on this curve
+SRM100-N2203 100 750 P 5.0674 10.6013 RESEARCH
+   0.001 176.5
+   0.003 865.4
+   0.004 1149.0
+   0.005 1383.8
+   0.006 1574.2
+   0.007 1726.5
+   0.009 1942.4
+   0.012 2121.0
+   0.015 2205.5
+   0.019 2252.9
+   0.026 2275.3
+   0.902 2301.1
+   2.287 2383.4
+   2.791 2362.7
+   3.308 2298.8
+   3.848 2188.6
+   4.392 2036.4
+   4.403 2002.7
+   4.418 1917.3
+   4.488 1369.9
+   4.500 1301.0
+   4.530 1230.8
+   4.598 1188.1
+   4.623 1057.8
+   4.671 691.8
+   4.682 629.6
+   4.705 569.2
+   4.751 525.5
+   4.754 502.6
+   4.759 301.6
+   4.763 176.3
+   4.772 0.0
+;

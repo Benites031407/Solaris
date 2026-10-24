@@ -1,0 +1,13 @@
+{
+  "part_name": "motor_mount_tube",
+  "outputs": {
+    "stl": {
+      "status": "done",
+      "path": "gui/assets/stl/motor_mount_tube.stl"
+    },
+    "thumbnail": {
+      "status": "done",
+      "path": "gui/assets/png/motor_mount_tube.png"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "part_name": "body_tube",
+  "outputs": {
+    "stl": {
+      "status": "done",
+      "path": "gui/assets/stl/body_tube.stl"
+    },
+    "thumbnail": {
+      "status": "done",
+      "path": "gui/assets/png/body_tube.png"
+    }
+  }
+}

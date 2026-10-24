@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "source_ork": "/Users/ppak/GitHub/rocketsmith-dev/v042/openrocket/l2_cert.ork",
+  "project_root": "/Users/ppak/GitHub/rocketsmith-dev/v042",
+  "generated_at": "2026-04-28T00:26:02.898747+00:00",
+  "rocket_name": "L2 Cert Rocket",
+  "stages": [
+    {
+      "name": "Sustainer",
+      "components": [
+        {
+          "type": "NoseCone",
+          "name": "Nose Cone",
+          "category": "structural",
+          "dimensions": {
+            "kind": "nose_cone",
+            "shape": "ellipsoid",
+            "length": [
+              350.0,
+              "millimeter"
+            ],
+            "base_od": [
+              127.0,
+              "millimeter"
+            ],
+            "wall": [
+              12.7,
+              "millimeter"
+            ]
+          },
+          "mass": [
+            0.832869,
+            "kilogram"
+          ],
+          "override_mass": [
+            0.832869,
+            "kilogram"
+          ],
+          "override_mass_enabled": false,
+          "material": "Cardboard",
+          "material_density": [
+            680.0,
+            "kilogram / meter ** 3"
+          ],
+          "human_notes": null,
+          "agent": null,
+          "cost": null,
+          "step_path": null,
+          "cadsmith_path": null,
+          "children": []
+        },
+        {
+          "type": "BodyTube",
+          "name": "Body Tube",
+          "category": "structural",
+          "dimensions": {
+            "kind": "tube",
+            "length": [
+              800.0,
+              "millimeter"
+            ],
+            "od": [
+              127.0,
+              "millimeter"
+            ],
+            "id": [
+              101.6,
+              "millimeter"
+            ],
+            "motor_mount": false
+          },
+          "mass": [
+            2.48084,
+            "kilogram"
+          ],
+          "override_mass": [
+            2.48084,
+            "kilogram"
+          ],
+          "override_mass_enabled": false,
+          "material": "Cardboard",
+          "material_density": [
+            680.0,
+            "kilogram / meter ** 3"
+          ],
+          "human_notes": null,
+          "agent": null,
+          "cost": null,
+          "step_path": null,
+          "cadsmith_path": null,
+          "children": [
+            {
+              "type": "CenteringRing",
+              "name": "Forward Centering Ring",
+              "category": "structural",
+              "dimensions": {
+                "kind": "ring",
+                "od": [
+                  101.6,
+                  "millimeter"
+                ],
+                "id": [
+                  41.5,
+                  "millimeter"
+                ],
+                "thickness": [
+                  6.0,
+                  "millimeter"
+                ]
+              },
+              "mass": [
+                0.027551,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.027551,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Cardboard",
+              "material_density": [
+                680.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "CenteringRing",
+              "name": "Aft Centering Ring",
+              "category": "structural",
+              "dimensions": {
+                "kind": "ring",
+                "od": [
+                  101.6,
+                  "millimeter"
+                ],
+                "id": [
+                  41.5,
+                  "millimeter"
+                ],
+                "thickness": [
+                  6.0,
+                  "millimeter"
+                ]
+              },
+              "mass": [
+                0.027551,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.027551,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Cardboard",
+              "material_density": [
+                680.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "TrapezoidFinSet",
+              "name": "Fins",
+              "category": "structural",
+              "dimensions": {
+                "kind": "fin_set",
+                "fin_type": "trapezoid",
+                "count": 4,
+                "root_chord": [
+                  280.0,
+                  "millimeter"
+                ],
+                "tip_chord": [
+                  100.0,
+                  "millimeter"
+                ],
+                "span": [
+                  120.0,
+                  "millimeter"
+                ],
+                "sweep": [
+                  180.0,
+                  "millimeter"
+                ],
+                "thickness": [
+                  5.0,
+                  "millimeter"
+                ]
+              },
+              "mass": [
+                0.31008,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.31008,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Cardboard",
+              "material_density": [
+                680.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "RailButton",
+              "name": "Forward Rail Button",
+              "category": "hardware",
+              "dimensions": {
+                "kind": "rail_button",
+                "outer_diameter": [
+                  9.7,
+                  "millimeter"
+                ],
+                "inner_diameter": [
+                  8.0,
+                  "millimeter"
+                ],
+                "height": [
+                  4.0,
+                  "millimeter"
+                ],
+                "instance_count": 1,
+                "axial_offset": [
+                  800.0,
+                  "millimeter"
+                ]
+              },
+              "mass": [
+                0.000827,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.000827,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Delrin",
+              "material_density": [
+                1420.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "RailButton",
+              "name": "Aft Rail Button",
+              "category": "hardware",
+              "dimensions": {
+                "kind": "rail_button",
+                "outer_diameter": [
+                  9.7,
+                  "millimeter"
+                ],
+                "inner_diameter": [
+                  8.0,
+                  "millimeter"
+                ],
+                "height": [
+                  4.0,
+                  "millimeter"
+                ],
+                "instance_count": 1,
+                "axial_offset": [
+                  1050.0,
+                  "millimeter"
+                ]
+              },
+              "mass": [
+                0.000827,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.000827,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Delrin",
+              "material_density": [
+                1420.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "Parachute",
+              "name": "Main Parachute",
+              "category": "recovery",
+              "dimensions": {
+                "kind": "recovery",
+                "diameter": [
+                  1219.2,
+                  "millimeter"
+                ],
+                "length": null,
+                "width": null,
+                "packed_length": null,
+                "packed_diameter": null
+              },
+              "mass": [
+                0.081459,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.081459,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Ripstop nylon",
+              "material_density": [
+                0.067,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "ShockCord",
+              "name": "Shock Cord",
+              "category": "recovery",
+              "dimensions": {
+                "kind": "recovery",
+                "diameter": null,
+                "length": [
+                  1500.0,
+                  "millimeter"
+                ],
+                "width": null,
+                "packed_length": null,
+                "packed_diameter": null
+              },
+              "mass": [
+                0.0027,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.0027,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Elastic cord (round 2 mm, 1/16 in)",
+              "material_density": [
+                0.0018,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            },
+            {
+              "type": "InnerTube",
+              "name": "Motor Mount Tube",
+              "category": "structural",
+              "dimensions": {
+                "kind": "tube",
+                "length": [
+                  355.0,
+                  "millimeter"
+                ],
+                "od": [
+                  41.5,
+                  "millimeter"
+                ],
+                "id": [
+                  40.5,
+                  "millimeter"
+                ],
+                "motor_mount": true
+              },
+              "mass": [
+                0.015558,
+                "kilogram"
+              ],
+              "override_mass": [
+                0.015558,
+                "kilogram"
+              ],
+              "override_mass_enabled": false,
+              "material": "Cardboard",
+              "material_density": [
+                680.0,
+                "kilogram / meter ** 3"
+              ],
+              "human_notes": null,
+              "agent": null,
+              "cost": null,
+              "step_path": null,
+              "cadsmith_path": null,
+              "children": []
+            }
+          ]
+        }
+      ],
+      "cg": [
+        646.6,
+        "millimeter"
+      ],
+      "cp": [
+        829.4,
+        "millimeter"
+      ],
+      "stability_cal": 1.44,
+      "max_diameter": [
+        127.0,
+        "millimeter"
+      ]
+    }
+  ]
+}

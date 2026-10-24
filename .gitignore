@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Scratch: exploratory scripts, debug renders and screenshots
+**/_scratch/*
+!Helios/scaled_38mm/_nose_door/_scratch/v1_printed/
+Helios/scaled_38mm/_explainer/shots/
+tmp/
+
+# CAD Explorer's hidden viewer sidecars, regenerated with the CAD skill's scripts/step
+.*.step.glb
+.*.stp.glb
+
+# Editor and OS clutter, SolidWorks lock files
+.DS_Store
+.DS_store
+Thumbs.db
+~$*
+
+# Runtime files from tools
+*.pid
+Big-Heavy-main/big_heavy_2/gui/logs/

@@ -1,0 +1,32 @@
+{
+  "openmotor": {
+    "designation": "N2484",
+    "impulse_ns": 11276.173793197057,
+    "burn_time_s": 4.529999999999948,
+    "avg_thrust_n": 2483.7387209685407,
+    "peak_thrust_n": 2659.543791555316,
+    "pc_peak_mpa": 4.565687409671937,
+    "kn_initial": 247.83122873345937,
+    "kn_peak": 279.4512163704345,
+    "isp_s": 220.24663372573173,
+    "prop_mass_kg": 5.2207368815446635,
+    "G_aft_peak_kg_m2s": 1053.2767271839466,
+    "port_throat": 2.185255198487712,
+    "alerts": []
+  },
+  "compared_with": "srm_ballistics runs.ideal",
+  "ideal": {
+    "designation": "N2523",
+    "impulse_ns": 11504.265648574536,
+    "burn_time_s": 4.5600000000027086,
+    "avg_thrust_n": 2522.8652738087067,
+    "peak_thrust_n": 2700.286277981022,
+    "pc_peak_mpa": 4.54792453164343,
+    "kn_initial": 247.83122873345937,
+    "kn_peak": 279.4513412239999,
+    "isp_s": 224.70173208165232,
+    "prop_mass_kg": 5.220736881544662,
+    "G_aft_peak_kg_m2s": 1053.0912859687667,
+    "port_throat": 2.1852551984877127
+  }
+}

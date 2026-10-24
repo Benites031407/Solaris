@@ -1,0 +1,13 @@
+{
+  "part_name": "forward_centering_ring",
+  "outputs": {
+    "stl": {
+      "status": "done",
+      "path": "gui/assets/stl/forward_centering_ring.stl"
+    },
+    "thumbnail": {
+      "status": "done",
+      "path": "gui/assets/png/forward_centering_ring.png"
+    }
+  }
+}

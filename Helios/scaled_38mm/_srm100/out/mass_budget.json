@@ -1,0 +1,355 @@
+{
+  "parts": {
+    "case": {
+      "material": "6061-T6 tube",
+      "count": 1,
+      "mass_each_kg": 2.234399234214323,
+      "mass_kg": 2.234399234214323
+    },
+    "nozzle_holder": {
+      "material": "304 stainless",
+      "count": 1,
+      "mass_each_kg": 1.5011952896534924,
+      "mass_kg": 1.5011952896534924
+    },
+    "nozzle_insert": {
+      "material": "isomolded graphite",
+      "count": 1,
+      "mass_each_kg": 0.31106475614644924,
+      "mass_kg": 0.31106475614644924
+    },
+    "oring_insert": {
+      "material": "FKM 90A",
+      "count": 1,
+      "mass_each_kg": 0.003772331672783908,
+      "mass_kg": 0.003772331672783908
+    },
+    "oring_case": {
+      "material": "FKM 90A",
+      "count": 4,
+      "mass_each_kg": 0.005071772521166621,
+      "mass_kg": 0.020287090084666483
+    },
+    "nozzle_insulator": {
+      "material": "glass phenolic",
+      "count": 1,
+      "mass_each_kg": 0.0388150046168634,
+      "mass_kg": 0.0388150046168634
+    },
+    "nozzle_cap": {
+      "material": "LDPE",
+      "count": 1,
+      "mass_each_kg": 0.006588578838382501,
+      "mass_kg": 0.006588578838382501
+    },
+    "bolt_m6x10": {
+      "material": "steel, 10.9",
+      "count": 18,
+      "mass_each_kg": 0.003377345742359608,
+      "mass_kg": 0.06079222336247294
+    },
+    "liner": {
+      "material": "paper phenolic",
+      "count": 1,
+      "mass_each_kg": 0.3475259662093179,
+      "mass_kg": 0.3475259662093179
+    },
+    "grain_spacer": {
+      "material": "linen phenolic",
+      "count": 5,
+      "mass_each_kg": 0.001331381833850124,
+      "mass_kg": 0.006656909169250622
+    },
+    "grain": {
+      "material": "APCP 70/16/14, as cast",
+      "count": 4,
+      "mass_each_kg": 1.266839825210979,
+      "mass_kg": 5.067359300843916
+    },
+    "casting_tube": {
+      "material": "spiral kraft",
+      "count": 4,
+      "mass_each_kg": 0.030787567792794377,
+      "mass_kg": 0.12315027117117729
+    },
+    "takeup_ring": {
+      "material": "silicone sponge, closed cell",
+      "count": 1,
+      "mass_each_kg": 0.0016664892390232443,
+      "mass_kg": 0.0016664892390232443
+    },
+    "fwd_insulator": {
+      "material": "EPDM",
+      "count": 1,
+      "mass_each_kg": 0.022834648923857816,
+      "mass_kg": 0.022834648923857816
+    },
+    "fwd_closure": {
+      "material": "6061-T651 bar",
+      "count": 1,
+      "mass_each_kg": 0.7704702305760172,
+      "mass_kg": 0.7704702305760172
+    },
+    "bolt_m6x16": {
+      "material": "steel, 10.9",
+      "count": 18,
+      "mass_each_kg": 0.00470906686821701,
+      "mass_kg": 0.08476320362790617
+    }
+  },
+  "loaded_kg": 10.60134152834991,
+  "empty_kg": 5.53398222750598,
+  "propellant_kg": 5.067359300843929,
+  "propellant_mass_fraction": 0.4779922698738543,
+  "cg_loaded_mm_from_case_aft_face": 310.7296662498933,
+  "cg_empty_mm_from_case_aft_face": 279.440559884335,
+  "envelope": {
+    "length_mm": 749.50582074074,
+    "z_min": -52.70582074074,
+    "z_max": 696.8,
+    "max_diameter_mm": 106.04007723496433
+  },
+  "thread_engagement_mm": {
+    "bolt_aft_00": 5.970000201424292,
+    "bolt_aft_01": 5.970000207141351,
+    "bolt_aft_02": 5.970000207141351,
+    "bolt_aft_03": 5.9700002071413545,
+    "bolt_aft_04": 5.970000207141353,
+    "bolt_aft_05": 5.97000020714136,
+    "bolt_aft_06": 5.970000207141358,
+    "bolt_aft_07": 5.97000020714134,
+    "bolt_aft_08": 5.970000207141358,
+    "bolt_aft_09": 5.9700001999999985,
+    "bolt_aft_10": 5.970000207141351,
+    "bolt_aft_11": 5.970000207141351,
+    "bolt_aft_12": 5.970000207141351,
+    "bolt_aft_13": 5.970000207141353,
+    "bolt_aft_14": 5.970000207141362,
+    "bolt_aft_15": 5.970000207141351,
+    "bolt_aft_16": 5.970000207141344,
+    "bolt_aft_17": 5.970000207141351,
+    "bolt_fwd_00": 11.970000201424469,
+    "bolt_fwd_01": 11.970000207141354,
+    "bolt_fwd_02": 11.97000020714134,
+    "bolt_fwd_03": 11.970000207141354,
+    "bolt_fwd_04": 11.970000207141364,
+    "bolt_fwd_05": 11.970000207141364,
+    "bolt_fwd_06": 11.97000020714136,
+    "bolt_fwd_07": 11.970000207141354,
+    "bolt_fwd_08": 11.97000020714136,
+    "bolt_fwd_09": 11.970000201074633,
+    "bolt_fwd_10": 11.97000020714136,
+    "bolt_fwd_11": 11.970000207141354,
+    "bolt_fwd_12": 11.970000207141346,
+    "bolt_fwd_13": 11.970000207141357,
+    "bolt_fwd_14": 11.970000207141354,
+    "bolt_fwd_15": 11.97000020714136,
+    "bolt_fwd_16": 11.970000207141354,
+    "bolt_fwd_17": 11.97000020714134
+  },
+  "thread_overlap_mm3": {
+    "bolt_aft_00": 48.99330621339395,
+    "bolt_aft_01": 48.99330582401282,
+    "bolt_aft_02": 48.9933058237571,
+    "bolt_aft_03": 48.99330582386184,
+    "bolt_aft_04": 48.99330582384616,
+    "bolt_aft_05": 48.99330582390583,
+    "bolt_aft_06": 48.993305823910504,
+    "bolt_aft_07": 48.99330582401153,
+    "bolt_aft_08": 48.993305824123055,
+    "bolt_aft_09": 48.99330577857126,
+    "bolt_aft_10": 48.993305823997254,
+    "bolt_aft_11": 48.99330582407529,
+    "bolt_aft_12": 48.99330582391535,
+    "bolt_aft_13": 48.99330582393081,
+    "bolt_aft_14": 48.99330582382419,
+    "bolt_aft_15": 48.993305823821416,
+    "bolt_aft_16": 48.99330582378085,
+    "bolt_aft_17": 48.99330582387921,
+    "bolt_fwd_00": 100.82958584848681,
+    "bolt_fwd_01": 100.82958464344995,
+    "bolt_fwd_02": 100.8295846433931,
+    "bolt_fwd_03": 100.8295846433924,
+    "bolt_fwd_04": 100.82958464318007,
+    "bolt_fwd_05": 100.82958464374221,
+    "bolt_fwd_06": 100.82958464331392,
+    "bolt_fwd_07": 100.829584643417,
+    "bolt_fwd_08": 100.82958464381545,
+    "bolt_fwd_09": 100.82958450807882,
+    "bolt_fwd_10": 100.82958464362112,
+    "bolt_fwd_11": 100.8295846435362,
+    "bolt_fwd_12": 100.82958464340145,
+    "bolt_fwd_13": 100.82958464379394,
+    "bolt_fwd_14": 100.82958464358404,
+    "bolt_fwd_15": 100.82958464361333,
+    "bolt_fwd_16": 100.82958464345624,
+    "bolt_fwd_17": 100.82958464344347
+  },
+  "glands": [
+    {
+      "ring": "oring_aft_outer",
+      "z": 21.6,
+      "gland_depth": 2.835000000000008,
+      "squeeze": 0.19688385269121583
+    },
+    {
+      "ring": "oring_aft_inner",
+      "z": 30.4,
+      "gland_depth": 2.835000000000008,
+      "squeeze": 0.19688385269121583
+    },
+    {
+      "ring": "oring_fwd_outer",
+      "z": 669.1999999999999,
+      "gland_depth": 2.835000000000008,
+      "squeeze": 0.19688385269121583
+    },
+    {
+      "ring": "oring_fwd_inner",
+      "z": 660.4,
+      "gland_depth": 2.835000000000008,
+      "squeeze": 0.19688385269121583
+    },
+    {
+      "ring": "oring_insert",
+      "z": -3.0,
+      "gland_depth": 2.819999999999986,
+      "squeeze": 0.2011331444759246
+    }
+  ],
+  "contacts": [
+    {
+      "lower": "nozzle_holder",
+      "upper": "nozzle_insulator",
+      "z": 38.0,
+      "gap": -3.623767952376511e-13,
+      "footprint": 12.525794898825076
+    },
+    {
+      "lower": "nozzle_insulator",
+      "upper": "liner",
+      "z": 43.0,
+      "gap": 0.0,
+      "footprint": 1.5
+    },
+    {
+      "lower": "nozzle_insulator",
+      "upper": "spacer_0",
+      "z": 43.0,
+      "gap": 0.0,
+      "footprint": 1.2000000000000028
+    },
+    {
+      "lower": "spacer_0",
+      "upper": "grain_1",
+      "z": 46.0,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "spacer_1",
+      "upper": "grain_2",
+      "z": 196.2,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "spacer_2",
+      "upper": "grain_3",
+      "z": 346.4,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "spacer_3",
+      "upper": "grain_4",
+      "z": 496.59999999999997,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "grain_1",
+      "upper": "spacer_1",
+      "z": 193.2,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "grain_2",
+      "upper": "spacer_2",
+      "z": 343.4,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "grain_3",
+      "upper": "spacer_3",
+      "z": 493.59999999999997,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "grain_4",
+      "upper": "spacer_4",
+      "z": 643.8,
+      "gap": 0.0,
+      "footprint": 0.3999999999999986
+    },
+    {
+      "lower": "spacer_4",
+      "upper": "takeup_ring",
+      "z": 646.8,
+      "gap": 0.0,
+      "footprint": 1.2000000000000028
+    },
+    {
+      "lower": "takeup_ring",
+      "upper": "fwd_insulator",
+      "z": 649.8,
+      "gap": 0.0,
+      "footprint": 4.200000000000003
+    },
+    {
+      "lower": "fwd_insulator",
+      "upper": "fwd_closure",
+      "z": 652.8,
+      "gap": 0.0,
+      "footprint": 44.97057735026919
+    }
+  ],
+  "proof": {
+    "dummy_lip_bearing_mm": 3.658089297197211,
+    "glands": [
+      {
+        "ring": "oring_aft_outer",
+        "z": 21.6,
+        "gland_depth": 2.835000000000008,
+        "squeeze": 0.19688385269121583
+      },
+      {
+        "ring": "oring_aft_inner",
+        "z": 30.4,
+        "gland_depth": 2.835000000000008,
+        "squeeze": 0.19688385269121583
+      },
+      {
+        "ring": "oring_fwd_outer",
+        "z": 669.1999999999999,
+        "gland_depth": 2.835000000000008,
+        "squeeze": 0.19688385269121583
+      },
+      {
+        "ring": "oring_fwd_inner",
+        "z": 660.4,
+        "gland_depth": 2.835000000000008,
+        "squeeze": 0.19688385269121583
+      },
+      {
+        "ring": "oring_insert",
+        "z": -3.0,
+        "gland_depth": 2.819999999999986,
+        "squeeze": 0.2011331444759246
+      }
+    ]
+  }
+}

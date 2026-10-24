@@ -1,0 +1,17 @@
+# CAD, meshes, images and media are binary: no diffs, no line-ending conversion
+*.step binary
+*.STEP binary
+*.stp binary
+*.stl binary
+*.STL binary
+*.3mf binary
+*.glb binary
+*.SLDPRT binary
+*.SLDASM binary
+*.ork binary
+*.dxf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.mp4 binary
+*.pdf binary

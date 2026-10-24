@@ -1,0 +1,358 @@
+========================================================================
+  EXPORTED MESH VERIFICATION -- _nose_simple/out/*.stl
+========================================================================
+
+-- part features (each probed where it is AND where it is not)
+-- assembly, sweep and release
+  ok   base_ring: watertight, 1 body, vol 38.98 cm3, mass 40.5 g ABS
+  ok   base_ring: mesh volume agrees with the CAD solid (38.98 vs 39.00 cm3)
+  ok   base_ring: print pose 65.5 x 78.2 x 57.4 mm fits the 300 mm bed
+  ok   half_shell: watertight, 1 body, vol 24.54 cm3, mass 25.5 g ABS
+  ok   half_shell: mesh volume agrees with the CAD solid (24.54 vs 24.56 cm3)
+  ok   half_shell: print pose 65.5 x 212.3 x 39.0 mm fits the 300 mm bed
+  ok   bulkhead: watertight, 1 body, vol 10.22 cm3, mass 10.6 g ABS
+  ok   bulkhead: mesh volume agrees with the CAD solid (10.22 vs 10.23 cm3)
+  ok   bulkhead: print pose 56.8 x 56.8 x 34.0 mm fits the 300 mm bed
+  ok   latch_arm: watertight, 1 body, vol 1.82 cm3, mass 1.9 g ABS
+  ok   latch_arm: mesh volume agrees with the CAD solid (1.82 vs 1.82 cm3)
+  ok   latch_arm: print pose 44.7 x 8.0 x 8.4 mm fits the 300 mm bed
+  ok   seam_pin: watertight, 1 body, vol 0.05 cm3, mass 0.0 g ABS
+  ok   seam_pin: mesh volume agrees with the CAD solid (0.05 vs 0.05 cm3)
+  ok   seam_pin: print pose 3.0 x 3.0 x 6.5 mm fits the 300 mm bed
+  ok   base_ring: spigot: bore is open at r=20 -- void at (  14.142,  14.142,  13.000)
+  ok   base_ring: spigot: wall at mid-thickness -- SOLID at (  21.157,  21.157,  13.000)
+  ok   base_ring: spigot: nothing out at the airframe OD below the shoulder -- void at (  22.952,  22.952,  13.000)
+  ok   base_ring: retention pad at 0: solid at r=26, in the bore -- SOLID at (  26.000,   0.000,   6.000)
+  ok   base_ring: retention pad at 180: solid at r=26 -- SOLID at ( -26.000,   0.000,   6.000)
+  ok   base_ring: no pad at 90: bore is open at r=26 -- void at (   0.000,  26.000,   6.000)
+  ok   base_ring: no pad at 270: bore is open at r=26 -- void at (  -0.000, -26.000,   6.000)
+  ok   base_ring: and the shock cord's drop at azimuth 270 is clear of both pads -- void at (   0.000, -18.000,   6.000)
+  ok   base_ring: pad at 0: still there 4.07 mm along the chord -- SOLID at (  25.680,   4.067,   6.000)
+  ok   base_ring: pad at 0: gone by 6.73 mm along the chord, so it is chord-limited -- void at (  25.114,   6.729,   6.000)
+  ok   base_ring: pad at 0: material at |x| 23.0 where y = 5.0 -- SOLID at (  23.000,   5.000,   6.000)
+  ok   base_ring: pad at 0: none at y = 6.5, past the chord -- void at (  23.000,   6.500,   6.000)
+  ok   base_ring: pad at 0: starts at z=0, prints off the bed -- SOLID at (  26.000,   0.000,   0.500)
+  ok   base_ring: pad at 0: full thickness in to r=24 -- SOLID at (  24.000,   0.000,  10.000)
+  ok   base_ring: pad at 0: by z=18 the 45 deg top cone has pulled the inboard face back out past r=24 -- void at (  24.000,   0.000,  18.000)
+  ok   base_ring: pad at 0: but still solid at r=26.5 there -- a cone, not a step -- SOLID at (  26.500,   0.000,  18.000)
+  ok   base_ring: pad at 0: nothing above RETAIN_PAD_Z_TOP -- void at (  26.000,   0.000,  22.000)
+  ok   base_ring: retention pilot at 0: bored -- void at (  30.000,   0.000,  13.000)
+  ok   base_ring: retention pilot at 180: bored -- void at ( -30.000,   0.000,  13.000)
+  ok   base_ring: no pilot at 90: the spigot wall is whole -- SOLID at (   0.000,  30.000,  13.000)
+  ok   base_ring: pilot at 0 is only 2.10 wide: 1.6 mm off its axis the wall is back -- SOLID at (  30.000,   0.000,  14.600)
+  ok   base_ring: pilot at 0: the 1.00 mm floor is SOLID -- SOLID at (  23.700,   0.000,  13.000)
+  ok   base_ring: pilot at 180: same floor -- SOLID at ( -23.700,   0.000,  13.000)
+  ok   base_ring: pilot at 0: material above its top edge too, so it has not broken out through the pad's 45 deg cone -- SOLID at (  24.500,   0.000,  14.550)
+  ok   base_ring: pilot at 0: pad material 1.6 mm to one side -- SOLID at (  24.500,   1.600,  13.000)
+  ok   base_ring: pilot at 180: same, mirrored -- SOLID at ( -24.500,  -1.600,  13.000)
+  ok   base_ring: mouth at 0: inboard of the countersink the hole is still 2.10 wide -- SOLID at (  29.500,   0.000,  14.400)
+  ok   base_ring: mouth at 0: by r=30.9 it has opened to 3.66 -- the cone is real -- void at (  30.900,   0.000,  14.400)
+  ok   base_ring: collar: solid at the OD -- SOLID at (  32.755,   0.000,  35.000)
+  ok   base_ring: collar: void outboard of the OD -- void at (  33.259,   0.000,  35.000)
+  ok   base_ring: collar: bore still open at r=20 -- void at (  20.000,   0.000,  35.000)
+  ok   base_ring: seat: land is solid just inboard of the bore -- SOLID at (  27.500,   0.000,  46.000)
+  ok   base_ring: seat: bore inboard of the land is open -- void at (  25.000,   0.000,  46.000)
+  ok   base_ring: seat: the 45 deg cone is present 1.0 mm below SEAT_Z0 at +1.5 mm of radius -- SOLID at (  28.400,   0.000,  43.500)
+  ok   base_ring: seat: and absent at the same z only 1.0 mm further in -- so it is a 45 deg ramp and not a step, which is what makes it printable -- void at (  27.400,   0.000,  43.500)
+  ok   base_ring: seat: does NOT continue above SEAT_Z1 -- void at (  27.500,   0.000,  50.000)
+  ok   base_ring: lobe at 135: solid at r=23 -- SOLID at ( -16.263,  16.263,  45.000)
+  ok   base_ring: lobe at 315: solid at r=23 -- SOLID at (  16.263, -16.263,  45.000)
+  ok   base_ring: no lobe at 45: r=23 is open -- void at (  16.263,  16.263,  45.000)
+  ok   base_ring: no lobe at 225: r=23 is open -- void at ( -16.263, -16.263,  45.000)
+  ok   base_ring: lobe at 135 stops at LOBE_R_IN, r=20.5 is open -- void at ( -14.496,  14.496,  45.000)
+  ok   base_ring: pilot at 135 is bored -- void at ( -18.031,  18.031,  45.000)
+  ok   base_ring: pilot at 315 is bored -- void at (  18.031, -18.031,  45.000)
+  ok   base_ring: pilot at 135 bottoms out above z=40.5, as designed -- SOLID at ( -18.031,  18.031,  40.500)
+  ok   base_ring: +Y lug: pin bore is open on the axis -- void at (  12.750,  35.759,  55.014)
+  ok   base_ring: +Y lug: meat above the pin bore -- SOLID at (  12.750,  35.759,  56.814)
+  ok   base_ring: +Y hinge: nothing at x=0 -- that gap is where the shell's knuckle goes -- void at (   0.000,  35.759,  56.814)
+  ok   base_ring: +Y lug: solid mid-height, outboard of the OD -- SOLID at (  12.750,  34.500,  50.000)
+  ok   base_ring: +Y lug: solid below the inboard cutback -- SOLID at (  12.750,  33.000,  45.000)
+  ok   base_ring: +Y lug: cut back to Z_RING_TOP inboard of y=33.5, so the shell can seat -- void at (  12.750,  33.000,  55.000)
+  ok   base_ring: +Y lug: below the 70 deg fairing ramp -- void at (  12.750,  34.500,  39.000)
+  ok   base_ring: -Y lug: pin bore is open -- void at ( -12.750, -35.759,  55.014)
+  ok   base_ring: -Y lug: meat above the bore -- SOLID at ( -12.750, -35.759,  56.814)
+  ok   base_ring: no lug at theta=0 -- void at (  12.750,   0.000,  56.814)
+  ok   base_ring: root post A: solid 0.4 mm below its tip -- SOLID at ( -29.618,   3.200,  54.814)
+  ok   base_ring: root post B: and so is its 180 deg image, which is half B's -- SOLID at (  29.618,  -3.200,  54.814)
+  ok   base_ring: root posts: nothing on the other diagonal -- there are TWO, not four, and that is what keeps each half meeting only its own -- void at (  29.618,   3.200,  54.814)
+  ok   base_ring: root post A: and it stops at POST_H, 0.5 mm below this -- void at ( -29.618,   3.200,  55.714)
+  ok   base_ring: root post A: Ø2.0 and no fatter -- the rest of the Ø2.7 socket is the 0.35 mm of radial slack the half needs to find it while still skewed -- void at ( -29.618,   4.700,  54.814)
+  ok   base_ring: spring seat 90 deg x+: bored into the lug's inner face -- void at (  12.000,  34.801,  52.383)
+  ok   base_ring: spring seat 90 deg x+: blind, with 1.5 mm of lug behind its floor -- SOLID at (  13.800,  34.801,  52.383)
+  ok   base_ring: spring seat 90 deg x+: still open just inside r = TORSION_SEAT_D/2 -- void at (  12.000,  34.801,  52.583)
+  ok   base_ring: spring seat 90 deg x+: solid just outside it, so it is Ø0.9 and not wider -- SOLID at (  12.000,  34.801,  53.083)
+  ok   base_ring: spring seat 90 deg x+: the wall to the pin bore is solid midway between them -- SOLID at (  12.000,  35.177,  53.416)
+  ok   base_ring: spring seat 270 deg x+: bored into the lug's inner face -- void at (  12.000, -34.801,  52.383)
+  ok   base_ring: spring seat 270 deg x+: blind, with 1.5 mm of lug behind its floor -- SOLID at (  13.800, -34.801,  52.383)
+  ok   base_ring: spring seat 270 deg x+: still open just inside r = TORSION_SEAT_D/2 -- void at (  12.000, -34.801,  52.583)
+  ok   base_ring: spring seat 270 deg x+: solid just outside it, so it is Ø0.9 and not wider -- SOLID at (  12.000, -34.801,  53.083)
+  ok   base_ring: spring seat 270 deg x+: the wall to the pin bore is solid midway between them -- SOLID at (  12.000, -35.177,  53.416)
+  ok   base_ring: spring seat 90 deg x-: bored into the lug's inner face -- void at ( -12.000,  34.801,  52.383)
+  ok   base_ring: spring seat 90 deg x-: blind, with 1.5 mm of lug behind its floor -- SOLID at ( -13.800,  34.801,  52.383)
+  ok   base_ring: spring seat 90 deg x-: still open just inside r = TORSION_SEAT_D/2 -- void at ( -12.000,  34.801,  52.583)
+  ok   base_ring: spring seat 90 deg x-: solid just outside it, so it is Ø0.9 and not wider -- SOLID at ( -12.000,  34.801,  53.083)
+  ok   base_ring: spring seat 90 deg x-: the wall to the pin bore is solid midway between them -- SOLID at ( -12.000,  35.177,  53.416)
+  ok   base_ring: spring seat 270 deg x-: bored into the lug's inner face -- void at ( -12.000, -34.801,  52.383)
+  ok   base_ring: spring seat 270 deg x-: blind, with 1.5 mm of lug behind its floor -- SOLID at ( -13.800, -34.801,  52.383)
+  ok   base_ring: spring seat 270 deg x-: still open just inside r = TORSION_SEAT_D/2 -- void at ( -12.000, -34.801,  52.583)
+  ok   base_ring: spring seat 270 deg x-: solid just outside it, so it is Ø0.9 and not wider -- SOLID at ( -12.000, -34.801,  53.083)
+  ok   base_ring: spring seat 270 deg x-: the wall to the pin bore is solid midway between them -- SOLID at ( -12.000, -35.177,  53.416)
+  ok   base_ring: spring seat at 90 deg x_sign=+1 is 3.05 mm deep, so the leg has the 3.0 mm of travel spring_check() spends on axial float
+  ok   base_ring: spring seat at 270 deg x_sign=+1 is 3.05 mm deep, so the leg has the 3.0 mm of travel spring_check() spends on axial float
+  ok   base_ring: spring seat at 90 deg x_sign=-1 is 3.05 mm deep, so the leg has the 3.0 mm of travel spring_check() spends on axial float
+  ok   base_ring: spring seat at 270 deg x_sign=-1 is 3.05 mm deep, so the leg has the 3.0 mm of travel spring_check() spends on axial float
+  ok   base_ring: pin bore at 90 deg is clear over +-0.7 mm of its axis
+  ok   base_ring: pin bore at 270 deg is clear over +-0.7 mm of its axis
+  ok   base_ring: retention pilot at 0 deg is clear over its whole 6.92 mm depth (25 stations)
+  ok   base_ring: and the floor behind it is unbroken over r 23.35..24.05, 0.70 mm of its 1.00 mm thickness (8 stations) -- the pilot cannot reach the servo bay
+  ok   base_ring: retention pilot at 180 deg is clear over its whole 6.92 mm depth (25 stations)
+  ok   base_ring: and the floor behind it is unbroken over r 23.35..24.05, 0.70 mm of its 1.00 mm thickness (8 stations) -- the pilot cannot reach the servo bay
+  ok   base_ring: collar OD measured by ray 32.7586 vs R_AIRFRAME 32.7586
+  ok   base_ring: spigot OD measured by ray 31.1135 vs R_SPIGOT 31.1207 -- 0.1710 mm radial clearance in Mbody's socket
+  ok   bulkhead: disc: solid at r=25 -- SOLID at (   0.000,  25.000,  48.750)
+  ok   bulkhead: disc: nothing below Z_BULK_BOT at r=25 -- void at (   0.000,  25.000,  46.000)
+  ok   bulkhead: disc: nothing above Z_BULK_TOP -- void at (   0.000,  25.000,  51.000)
+  ok   bulkhead: thrust pad: solid at r=8, below the disc -- SOLID at (   8.000,   0.000,  47.200)
+  ok   bulkhead: thrust pad: void outboard at r=12 -- void at (  12.000,   0.000,  47.200)
+  ok   bulkhead: thrust pad: void inboard at r=4 -- void at (   4.000,   0.000,  47.200)
+  ok   bulkhead: fin +x: solid below the notch apex at y=0 -- SOLID at (   7.950,   0.000,  25.000)
+  ok   bulkhead: fin +x: notch apex has removed y=0 at z=30 -- void at (   7.950,   0.000,  30.000)
+  ok   bulkhead: fin +x: full height outboard of the notch -- SOLID at (   7.950,  12.000,  40.000)
+  ok   bulkhead: fin +x: notched away in the arm's band -- void at (   7.950,   5.000,  40.000)
+  ok   bulkhead: fin +x: V has closed to +-4.61 by the flange face, so the pad has a root -- SOLID at (   7.950,   5.215,  32.000)
+  ok   bulkhead: fin +x: still open just inboard of that, as the V requires -- void at (   7.950,   4.015,  32.000)
+  ok   bulkhead: fin -x: same V, mirrored -- SOLID at (  -7.950,   5.000,  32.000)
+  ok   bulkhead: fin -x: same notch, mirrored -- void at (  -7.950,   5.000,  40.000)
+  ok   bulkhead: between the fins: open for the servo body -- void at (   0.000,   0.000,  25.000)
+  ok   bulkhead: fin +x: ends at FIN_Y1 -- void at (   7.950,  23.500,  30.000)
+  ok   bulkhead: fin +x: ends at FIN_Y0 -- void at (   7.950, -16.000,  30.000)
+  ok   bulkhead: fin +x: nothing below FIN_Z_BOT -- void at (   7.950,  20.000,  15.000)
+  ok   bulkhead: aft pad: solid -- SOLID at (   3.000,  -9.000,  30.000)
+  ok   bulkhead: aft pad: M2 pilot is bored -- void at (   0.000,  -8.800,  30.000)
+  ok   bulkhead: fwd pad: solid -- SOLID at (   3.000,  20.000,  30.000)
+  ok   bulkhead: fwd pad: M2 pilot is bored -- void at (   0.000,  19.200,  30.000)
+  ok   bulkhead: between the pads: clear for the servo body -- void at (   3.000,   5.000,  30.000)
+  ok   bulkhead: aft pad: nothing below PAD_T -- void at (   3.000,  -9.000,  26.000)
+  ok   bulkhead: aft pad: nothing above the flange face -- void at (   3.000,  -9.000,  33.000)
+  ok   bulkhead: hook slot A: open where the hook sits at rest -- void at (  23.000,   1.000,  48.750)
+  ok   bulkhead: hook slot A: STILL open 3 mm the wrong side of the split plane -- this is the swing clearance, and it is the whole reason the nose can open -- void at (  23.000,  -3.000,  48.750)
+  ok   bulkhead: hook slot A: closed again by y=-5.5, past SLOT_Y0 -- SOLID at (  23.000,  -5.500,  48.750)
+  ok   bulkhead: hook slot A: disc intact outboard in y, past SLOT_Y1 -- SOLID at (  23.000,   5.000,  48.750)
+  ok   bulkhead: hook slot B: open, at the 180 deg image -- void at ( -23.000,  -1.000,  48.750)
+  ok   bulkhead: hook slot B: its swing clearance, mirrored -- void at ( -23.000,   3.000,  48.750)
+  ok   bulkhead: hook slot B: closed again on its far side -- SOLID at ( -23.000,   5.500,  48.750)
+  ok   bulkhead: hook slot A: it is a THROUGH slot -- void at (  23.000,   1.000,  46.000)
+  ok   bulkhead: hook slot A: inboard of the slot the disc is whole -- SOLID at (  18.000,   1.000,  48.750)
+  ok   bulkhead: hook slot A: outboard of it the rim is continuous, so the seat land is unbroken even with the slot deepened -- SOLID at (  27.500,   1.000,  48.750)
+  ok   bulkhead: cord hole: open -- void at (   0.000, -18.000,  48.750)
+  ok   bulkhead: cord hole: goes through -- void at (   0.000, -18.000,  46.000)
+  ok   bulkhead: cord hole: disc intact beside it -- SOLID at (   0.000, -24.000,  48.750)
+  ok   bulkhead: cord hole: straight bore is only 8 wide -- SOLID at (   4.300, -18.000,  48.750)
+  ok   bulkhead: cord hole: top chamfer has opened past r=4.3 near the face -- void at (   4.300, -18.000,  49.850)
+  ok   bulkhead: cord hole: bottom chamfer likewise -- both faces relieved -- void at (   4.300, -18.000,  47.650)
+  ok   bulkhead: ring screw at 135: bored -- void at ( -18.031,  18.031,  48.750)
+  ok   bulkhead: ring screw at 315: bored -- void at (  18.031, -18.031,  48.750)
+  ok   bulkhead: no ring screw at 45 -- SOLID at (  18.031,  18.031,  48.750)
+  ok   bulkhead: aft flange screw access: open -- void at (   0.000,  -8.800,  48.750)
+  ok   bulkhead: fwd flange screw access: open -- void at (   0.000,  19.200,  48.750)
+  ok   bulkhead: horn screw access: open on the axis -- void at (   0.000,   0.000,  48.750)
+  ok   bulkhead: disc intact between the aft access and the horn one -- SOLID at (   0.000,  -5.500,  48.750)
+  ok   bulkhead: disc intact between the horn access and the fwd one -- SOLID at (   0.000,   3.500,  48.750)
+  ok   bulkhead: access hole at y=-8.8 is clear right through the plate
+  ok   bulkhead: access hole at y=+19.2 is clear right through the plate
+  ok   bulkhead: access hole at y=+0.0 is clear right through the plate
+  ok   bulkhead: fin carries the pad at y=-11.5 below its own underside
+  ok   bulkhead: fin carries the pad at y=-6.9 below its own underside
+  ok   bulkhead: fin carries the pad at y=+17.3 below its own underside
+  ok   bulkhead: fin carries the pad at y=+21.9 below its own underside
+  ok   bulkhead: the MG90S body envelope (12.2 x 22.8 x 22.5 mm at y -6.2..+16.6) is clear -- 1323 points, none in material
+  ok   bulkhead: the MG90S aft flange ear envelope (12.2 x 4.8 x 2.5 mm at y -11.0..-6.2) is clear -- 1323 points, none in material
+  ok   bulkhead: the MG90S fwd flange ear envelope (12.2 x 4.8 x 2.5 mm at y +16.6..+21.4) is clear -- 1323 points, none in material
+  ok   bulkhead: the flange pilot at y=-8.8 is ringed by material all the way round, so the screw pulls on a face and not on an edge
+  ok   bulkhead: the flange pilot at y=+19.2 is ringed by material all the way round, so the screw pulls on a face and not on an edge
+  ok   latch_arm: bar: full thickness outboard of the horn slot -- SOLID at (  20.000,   0.000,  42.000)
+  ok   latch_arm: bar: solid right down to Z_ARM_BOT out there -- SOLID at (  20.000,   0.000,  39.000)
+  ok   latch_arm: bar: only LATCH_ARM_W wide -- void at (   0.000,   5.000,  42.000)
+  ok   latch_arm: bar: ends at the arc, r=22.0 -- void at (  24.000,   0.000,  42.000)
+  ok   latch_arm: bar: nothing above Z_ARM_TOP -- void at (  20.000,   0.000,  47.500)
+  ok   latch_arm: bar: nothing below Z_ARM_BOT -- void at (  20.000,   0.000,  38.200)
+  ok   latch_arm: horn pocket: hub is open -- void at (   0.000,   0.000,  41.450)
+  ok   latch_arm: horn pocket: slot is open at x=10 -- void at (  10.000,   0.000,  41.450)
+  ok   latch_arm: horn pocket: and at x=-10, for a 2-arm horn -- void at ( -10.000,   0.000,  41.450)
+  ok   latch_arm: horn pocket: the slot ends by x=19.5, leaving land out to the arc -- SOLID at (  19.500,   0.000,  41.450)
+  ok   latch_arm: horn pocket: and is still open at x=17.5, so it really is 36.8 mm long -- void at (  17.500,   0.000,  41.450)
+  ok   latch_arm: horn pocket: slot is only 5.0 wide -- SOLID at (  10.000,   3.000,  41.450)
+  ok   latch_arm: horn pocket: 2.70 mm of floor over the slot -- SOLID at (  10.000,   0.000,  44.850)
+  ok   latch_arm: shaft screw: clearance bored through the floor -- void at (   0.000,   0.000,  44.850)
+  ok   latch_arm: shaft screw: clearance is only 2.7 wide -- SOLID at (   2.000,   0.000,  44.850)
+  ok   latch_arm: counterbore: open at r=2.0 near the top -- void at (   2.000,   0.000,  46.500)
+  ok   latch_arm: counterbore: only 5.0 wide -- SOLID at (   3.000,   0.000,  46.500)
+  ok   latch_arm: counterbore: stops at 1.6 deep, leaving material for the head to pull on -- SOLID at (   2.000,   0.000,  45.000)
+  ok   latch_arm: land: solid 0.3 mm outboard of the slot's end, at its widest y -- SOLID at (  18.700,   2.000,  41.450)
+  ok   latch_arm: land: and still solid 0.3 mm inboard of the foot's inboard corner, so the 1.93 mm of land is unbroken across the whole thrust path -- SOLID at (  20.200,   0.250,  41.450)
+  ok   latch_arm: land: and it really is the slot next door -- open 0.3 mm the other side of HORN_SLOT_R -- void at (  18.100,   2.000,  41.450)
+  ok   latch_arm: latched: solid directly above the foot's inboard end, at the latch face -- SOLID at (  21.000,   1.500,  38.900)
+  ok   latch_arm: and nothing below it -- the foot occupies that, which is the point -- void at (  21.000,   1.500,  38.300)
+  ok   latch_arm: furthest point of the exported mesh r=22.361 = ARM_CORNER_R, so it clears the seat bore 26.9 by 4.54 mm at every angle of the sweep
+  ok   latch_arm: at 10 deg of sweep the furthest point is still 22.361
+  ok   latch_arm: at 20 deg of sweep the furthest point is still 22.361
+  ok   latch_arm: at 30 deg of sweep the furthest point is still 22.361
+  ok   latch_arm: at x=0, 10.69 mm2 of the 67.2 gross survives the pocket and the bore (84% gone), with S=4.19 mm3 about the bending axis.  One hook's 0.598 N at r 22.14 is 13.24 N.mm, so 3.16 MPa -- 13x inside in-layer ABS, which is the allowable because both fibres run along x
+  ok   latch_arm: latched, the arm sits over 100% of both hooks' engaged ledge (x 20.60..22.04) -- wanted 100%
+  ok   latch_arm: latched, the arm sits over 36% of both hooks' whole foot (x 20.50..25.50) -- wanted 30%
+  ok   latch_arm: swept 30 deg, the arm sits over 0% of either hook's engaged ledge -- the halves are free
+  ok   latch_arm: swept 30 deg, the arm sits over 0% of either hook's whole foot -- the halves are free
+  ok   half_shell: nothing at all on the y<0 side (25 probes)
+  ok   half_shell: OD at z=70 measured 31.4249 vs nose_profile 31.4339
+  ok   half_shell: radial wall at z=70 is 1.920 mm, and 2.008 is what 2.0 mm normal becomes at this 5.22 deg slope
+  ok   half_shell: OD at z=110 measured 27.2272 vs nose_profile 27.2290
+  ok   half_shell: radial wall at z=110 is 1.920 mm, and 2.017 is what 2.0 mm normal becomes at this 7.34 deg slope
+  ok   half_shell: OD at z=160 measured 19.5162 vs nose_profile 19.5187
+  ok   half_shell: radial wall at z=160 is 1.940 mm, and 2.031 is what 2.0 mm normal becomes at this 10.03 deg slope
+  ok   half_shell: OD at z=210 measured 9.4777 vs nose_profile 9.4802
+  ok   half_shell: radial wall at z=210 is 1.960 mm, and 2.050 is what 2.0 mm normal becomes at this 12.72 deg slope
+  ok   half_shell: cavity: open on the axis side at z=100 -- void at (   0.000,  15.000, 100.000)
+  ok   half_shell: cavity: open at the root -- void at (   0.000,  15.000,  53.414)
+  ok   half_shell: cavity: still open near the tip -- void at (   0.000,   3.000, 240.000)
+  ok   half_shell: vent at 45: bored -- void at (  22.076,  22.076,  60.000)
+  ok   half_shell: vent at 135: bored -- void at ( -22.076,  22.076,  60.000)
+  ok   half_shell: no vent at 90: skin intact -- SOLID at (   0.000,  31.220,  60.000)
+  ok   half_shell: vent at 45: skin intact 4 mm above it, so it is a hole not a slot -- SOLID at (  22.076,  22.076,  64.000)
+  ok   half_shell: knuckle: solid at x=0 -- SOLID at (   0.000,  32.500,  55.000)
+  ok   half_shell: knuckle: pin bore is open -- void at (   0.000,  35.759,  55.014)
+  ok   half_shell: knuckle: meat above the pin bore -- SOLID at (   0.000,  35.759,  56.614)
+  ok   half_shell: knuckle: only KNUCKLE_W wide, so the ring's lugs at |x|>=10.5 have room -- void at (   6.000,  33.000,  55.000)
+  ok   half_shell: knuckle: ends at the lug's OD line -- void at (   0.000,  39.610,  55.000)
+  ok   half_shell: hook A: solid below the shell root -- SOLID at (  23.000,   1.500,  50.000)
+  ok   half_shell: hook A: only TONGUE_Y0..Y1 thick -- void at (  23.000,   5.000,  50.000)
+  ok   half_shell: no hook at -x: the 180 deg image puts the second one there instead -- void at ( -23.000,   1.500,  50.000)
+  ok   half_shell: THE NOTCH: void at x=22, z=42 -- this is the pocket the latch arm lies in, and its ceiling and floor are what grip the arm -- void at (  22.000,   1.500,  42.000)
+  ok   half_shell: the notch's CEILING: solid again just above Z_STEP, 0.6 mm over the arm -- SOLID at (  22.000,   1.500,  48.100)
+  ok   half_shell: the notch's FLOOR: the foot, solid just under the latch face -- this is the material the arm cannot rise through -- SOLID at (  22.000,   1.500,  38.100)
+  ok   half_shell: and nothing below Z_HOOK_BOT -- void at (  22.000,   1.500,  35.600)
+  ok   half_shell: the foot stops at HOOK_X_IN inboard, so it clears the horn and the hub -- void at (  19.500,   1.500,  38.100)
+  ok   half_shell: the WEB: solid between WEB_X_IN and TONGUE_X1 -- 2.43 mm of wall carrying the whole latch load down past the arm -- SOLID at (  25.000,   1.500,  42.000)
+  ok   half_shell: the web stops at TONGUE_X1 outboard -- void at (  26.100,   1.500,  42.000)
+  ok   half_shell: and the arm's swept corner radius passes through that void, inboard of the web, with WEB_CLEAR to spare -- void at (  22.715,   1.500,  42.000)
+  ok   half_shell: foot ramp: the bearing LAND is at full height near the split plane -- SOLID at (  22.000,   0.500,  38.450)
+  ok   half_shell: foot ramp: and has fallen away by the foot's far edge -- so the arm has somewhere to enter and cams the halves shut as it advances -- void at (  22.000,   3.000,  38.450)
+  ok   half_shell: gusset: ties the hook to the wall -- SOLID at (  24.000,   1.500,  61.000)
+  ok   half_shell: gusset: full depth at the root -- this is the extreme fibre of the weld -- SOLID at (  27.000,   1.500,  52.714)
+  ok   half_shell: gusset: and solid at mid-depth -- SOLID at (  27.000,   1.500,  57.207)
+  ok   half_shell: gusset: and right up under GUSSET_Z_TOP, so it really is 9.59 mm deep -- SOLID at (  27.000,   1.500,  61.700)
+  ok   half_shell: gusset: but nothing above it -- the diagonal has ended, not run on -- void at (  27.000,   1.500,  62.600)
+  ok   half_shell: gusset: and nothing outboard of the wall it welds to -- void at (  33.200,   1.500,  54.414)
+  ok   half_shell: step chamfer: 0.2 below Z_STEP the web's inboard face has been pulled inboard of WEB_X_IN -- a square corner would leave this void -- SOLID at (  22.870,   1.500,  47.400)
+  ok   half_shell: step chamfer: and it is only STEP_CHAM deep -- the face is back at WEB_X_IN below that, which is what keeps it off the arm's swept radius -- void at (  22.870,   1.500,  46.600)
+  ok   half_shell: root post socket: bored along +z from the root face -- void at ( -29.618,   3.200,  53.414)
+  ok   half_shell: root post socket: blind at POST_BORE_DEPTH, so the post cannot punch through -- SOLID at ( -29.618,   3.200,  56.914)
+  ok   half_shell: root post pad: roofs the socket -- SOLID at ( -29.618,   5.500,  54.414)
+  ok   half_shell: root post pad: and there is exactly ONE of them -- none at the mirror, where the hook's weld is -- void at (  29.618,   5.500,  54.414)
+  ok   half_shell: seam: the cavity is between the pads -- void at (   0.000,   1.000, 110.000)
+  ok   half_shell: dowel socket z=120 x+: bored -- void at (  22.916,   2.400, 120.000)
+  ok   half_shell: dowel socket z=120 x+: backed by material, not a through hole -- SOLID at (  22.916,   5.150, 120.000)
+  ok   half_shell: dowel socket z=120 x+: still open just inside r = DOWEL_BORE/2 -- void at (  22.916,   2.400, 121.400)
+  ok   half_shell: dowel socket z=120 x+: solid just outside it, so the bore is 3.3 and not wider -- SOLID at (  22.916,   2.400, 121.900)
+  ok   half_shell: dowel socket z=120 x-: bored -- void at ( -22.916,   2.400, 120.000)
+  ok   half_shell: dowel socket z=120 x-: backed by material, not a through hole -- SOLID at ( -22.916,   5.150, 120.000)
+  ok   half_shell: dowel socket z=120 x-: still open just inside r = DOWEL_BORE/2 -- void at ( -22.916,   2.400, 121.400)
+  ok   half_shell: dowel socket z=120 x-: solid just outside it, so the bore is 3.3 and not wider -- SOLID at ( -22.916,   2.400, 121.900)
+  ok   half_shell: dowel socket z=180 x+: bored -- void at (  12.742,   2.400, 180.000)
+  ok   half_shell: dowel socket z=180 x+: backed by material, not a through hole -- SOLID at (  12.742,   5.150, 180.000)
+  ok   half_shell: dowel socket z=180 x+: still open just inside r = DOWEL_BORE/2 -- void at (  12.742,   2.400, 181.400)
+  ok   half_shell: dowel socket z=180 x+: solid just outside it, so the bore is 3.3 and not wider -- SOLID at (  12.742,   2.400, 181.900)
+  ok   half_shell: dowel socket z=180 x-: bored -- void at ( -12.742,   2.400, 180.000)
+  ok   half_shell: dowel socket z=180 x-: backed by material, not a through hole -- SOLID at ( -12.742,   5.150, 180.000)
+  ok   half_shell: dowel socket z=180 x-: still open just inside r = DOWEL_BORE/2 -- void at ( -12.742,   2.400, 181.400)
+  ok   half_shell: dowel socket z=180 x-: solid just outside it, so the bore is 3.3 and not wider -- SOLID at ( -12.742,   2.400, 181.900)
+  ok   half_shell: spring seat x+: bored into the knuckle end face -- void at (   3.500,  32.959,  55.014)
+  ok   half_shell: spring seat x+: blind -- solid again past its floor, so the two seats in one knuckle do not meet in the middle -- SOLID at (   1.700,  32.959,  55.014)
+  ok   half_shell: spring seat x+: still open just inside r = TORSION_SEAT_D/2 -- void at (   3.500,  32.959,  55.214)
+  ok   half_shell: spring seat x+: solid just outside it, so it is Ø0.9 and not wider -- SOLID at (   3.500,  32.959,  55.714)
+  ok   half_shell: spring seat x+: the wall to the pin bore is solid midway between them, so the leg cannot foul the pin -- SOLID at (   3.500,  34.009,  55.014)
+  ok   half_shell: spring seat x-: bored into the knuckle end face -- void at (  -3.500,  32.959,  55.014)
+  ok   half_shell: spring seat x-: blind -- solid again past its floor, so the two seats in one knuckle do not meet in the middle -- SOLID at (  -1.700,  32.959,  55.014)
+  ok   half_shell: spring seat x-: still open just inside r = TORSION_SEAT_D/2 -- void at (  -3.500,  32.959,  55.214)
+  ok   half_shell: spring seat x-: solid just outside it, so it is Ø0.9 and not wider -- SOLID at (  -3.500,  32.959,  55.714)
+  ok   half_shell: spring seat x-: the wall to the pin bore is solid midway between them, so the leg cannot foul the pin -- SOLID at (  -3.500,  34.009,  55.014)
+  ok   half_shell: spring seat x_sign=+1 is 3.05 mm deep, matching the 3.0 mm of bent leg spring_check() assumes
+  ok   half_shell: spring seat x_sign=-1 is 3.05 mm deep, matching the 3.0 mm of bent leg spring_check() assumes
+  ok   half_shell: dowel socket z=120 x_sign=+1 is 4.50 mm deep (DOWEL_DEPTH 4.5), so a 3.0 x 6.5 mm rod bottomed in half A engages half B by 1.70 mm and still stops 2.80 mm off its floor
+  ok   half_shell: dowel socket z=120 x_sign=-1 is 4.50 mm deep (DOWEL_DEPTH 4.5), so a 3.0 x 6.5 mm rod bottomed in half A engages half B by 1.70 mm and still stops 2.80 mm off its floor
+  ok   half_shell: dowel socket z=180 x_sign=+1 is 4.50 mm deep (DOWEL_DEPTH 4.5), so a 3.0 x 6.5 mm rod bottomed in half A engages half B by 1.70 mm and still stops 2.80 mm off its floor
+  ok   half_shell: dowel socket z=180 x_sign=-1 is 4.50 mm deep (DOWEL_DEPTH 4.5), so a 3.0 x 6.5 mm rod bottomed in half A engages half B by 1.70 mm and still stops 2.80 mm off its floor
+  ok   half_shell: lowest y is 0.1500 = SEAM_SETBACK, so the two halves have 0.30 mm of total seam gap and cannot fight
+  ok   half_shell: apex: solid 1.0 mm down from the top, where the cone is r 0.41 -- SOLID at (   0.000,   0.200, 247.389)
+  ok   half_shell: apex: and nothing above Z_SHELL_TOP -- it ends in a point, not a flat -- void at (   0.000,   0.200, 248.489)
+  ok   half_shell: apex: the last 0.5766 mm up to the true Z_TIP is missing, and that is SEAM_SETBACK / tan(TIP_HALF_ANGLE) exactly -- void at (   0.000,   0.200, 248.865)
+  ok   half_shell: spans z 36.100..248.389 -- down to Z_HOOK_BOT exactly, so the foot is the lowest thing on the part, and up to Z_SHELL_TOP exactly, which is 0.5766 mm short of the design apex because the seam cut takes SEAM_SETBACK off a cone of half-angle 14.58 deg
+  ok   seam_pin: pin: solid on the axis at mid-length -- SOLID at (   0.000,   0.000,   3.250)
+  ok   seam_pin: pin: full Ø3.0 at mid-length -- SOLID at (   1.400,   0.000,   3.250)
+  ok   seam_pin: pin: and nothing outboard of Ø3.0 -- void at (   1.600,   0.000,   3.250)
+  ok   seam_pin: pin: nothing below z=0 -- void at (   0.000,   0.000,  -0.100)
+  ok   seam_pin: pin: nothing above DOWEL_LEN -- void at (   0.000,   0.000,   6.600)
+  ok   seam_pin: chamfer at z=0: inside the taper is solid -- SOLID at (   1.150,   0.000,   0.050)
+  ok   seam_pin: chamfer at z=0: outside it is gone -- the cutter took the annulus, not the frustum -- void at (   1.350,   0.000,   0.050)
+  ok   seam_pin: chamfer at z=DOWEL_LEN: inside the taper is solid -- SOLID at (   1.150,   0.000,   6.450)
+  ok   seam_pin: chamfer at z=DOWEL_LEN: and gone outside it too, so BOTH ends are broken and the pin is symmetric end for end -- void at (   1.350,   0.000,   6.450)
+  ok   seam_pin: 45.13 mm3 is the 45.95 of cylinder less the 0.79 of chamfer, to 0.0 %
+  ok   seam_pin: widest point r 1.5000 against the r 1.6246 the withdrawal sweep allows -- 0.2492 mm of diameter spare for the printer to be wrong by
+  ok   ring vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   ring vs latch arm (latched): no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   bulkhead vs latch arm (latched): no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   ring vs half A: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   bulkhead vs half A: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   bulkhead vs half B: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm vs half B (latched): no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm vs half A (latched): 0 overlapping samples, and across the whole 20.5..22.1 x 0.15..1.15 bearing land the foot's top is never more than 0.1 um off the arm's UNDERSIDE -- it bears flat up on it, which is the latch
+  ok   RESISTANCE at 0.25 deg: the foot has risen 0.155 mm and now occupies all 45 points inside the arm -- the half CANNOT open without breaking the arm, which is what a latch is
+  ok   RESISTANCE at 0.50 deg: the foot has risen 0.311 mm and now occupies all 45 points inside the arm -- the half CANNOT open without breaking the arm, which is what a latch is
+  ok   RESISTANCE at 1.00 deg: the foot has risen 0.621 mm and now occupies all 45 points inside the arm -- the half CANNOT open without breaking the arm, which is what a latch is
+  ok   RESISTANCE at 2.00 deg: the foot has risen 1.243 mm and now occupies all 45 points inside the arm -- the half CANNOT open without breaking the arm, which is what a latch is
+  ok   RELEASED arm vs half A opened 0.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half B opened 0.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half A opened 2.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half B opened 2.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half A opened 10.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half B opened 10.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half A opened 30.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half B opened 30.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half A opened 110.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   RELEASED arm vs half B opened 110.0 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 0.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 5.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 10.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 15.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 20.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 25.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm at 30.0 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   latch arm through its whole 30 deg sweep: closest approach to the CRADLE 0.606 mm, at 30.0 deg (measured on the meshes; bulkhead.py's capsule maths said 0.607)
+  ok   half A opened 5 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 5 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 5 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 15 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 15 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 15 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 30 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 30 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 30 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 60 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 60 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 60 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 90 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 90 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 90 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 110 deg vs ring: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A vs half B, both opened 110 deg: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   half A opened 110 deg vs bulkhead: no interpenetration (12000 samples each way, coincident faces tolerated by a 0.05 mm bite)
+  ok   opening sweep (sampled upper bounds): half-to-ring closest approach <= 0.561 mm at 5 deg; half-to-half <= 0.142 mm at 5 deg -- both positive, and no overlap at any angle
+  ok   seam dowels withdraw: the four rods stay clear of half B at every one of the 27 angles from 0.25 to 90 deg, the first 6 deg stepped at 0.25 -- which is where a dowel binds if it is going to
+  ok   root posts: the slice above the collar top is 19.42 mm3, which is the two Ø2.0 x 3.0 pillars (18.85) plus their root fillets and nothing else
+  ok   root post withdraws: both posts stay clear of half A at every one of the 27 angles from 0.25 to 90 deg -- so A's own post comes out of its socket, and B's post (y -4.5..-1.9, the wrong side of the seam) never touches A at all, shut or open
+  ok   opened 100 deg: the axis is clear from the bulkhead face for 40 mm, so the pack has a straight way out
+  ok   assembled bbox x -32.759..32.759  y -39.110..39.110  z 0.000..248.389
+  ok   hinge fairing stands 6.35 mm proud of the 65.52 mm OD at +-Y; x stays within -0.000 mm of it, so rail guides belong at +-X
+========================================================================
+all 350 checks passed

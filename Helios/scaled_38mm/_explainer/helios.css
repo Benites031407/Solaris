@@ -1,0 +1,321 @@
+.hx {
+  --hx-blend: normal;
+  --hx-button-hover: #232323;
+  --hx-button-ring: #ffffff14;
+  --hx-part-ring: #ffffff10;
+  --hx-part-hover: #ffffff0a;
+  --hx-lamp-off: #4a4a4a;
+  --hx-lamp-on: #ff8a3c;
+  --hx-lamp-glow: #ff7a2a88;
+  --hx-lamp-armed: #ffcf6a;
+  --hx-canopy-a: var(--anatomy-hi);
+  --hx-void: var(--anatomy-shade-0);
+}
+
+[data-theme="light"] .hx {
+  --hx-blend: normal;
+  --hx-button-hover: #f0f0ed;
+  --hx-button-ring: #0000001a;
+  --hx-part-ring: #00000014;
+  --hx-part-hover: #0000000a;
+  --hx-lamp-off: #c4c4c4;
+  --hx-lamp-on: #d9480f;
+  --hx-lamp-glow: #d9480f55;
+  --hx-lamp-armed: #c99400;
+  /* the inside of the white nose is in its own shadow */
+  --hx-void: #a9a59e;
+}
+
+.hx .iso-plate {
+  padding: 52px 24px 64px;
+  overflow: hidden;
+}
+
+.hx-stage {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 800 / 1000;
+  border-radius: 10px;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+
+.hx-stage:focus-visible {
+  outline: 1px solid var(--anatomy-muted);
+  outline-offset: 6px;
+}
+
+.hx-stage > svg,
+.hx-stage > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hx-plume,
+.hx-veil {
+  pointer-events: none;
+  mix-blend-mode: var(--hx-blend);
+  /* the trail runs out of the frame softly instead of on the stage's edge */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 36px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 36px), transparent 100%);
+}
+
+.hx-front {
+  pointer-events: none;
+}
+
+.hx-front .it {
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+
+.hx-void {
+  fill: var(--hx-void);
+  stroke: none;
+}
+
+.hx-lamp {
+  fill: var(--anatomy-shade-1);
+  stroke: var(--anatomy-lo);
+  stroke-width: 0.6;
+  transition: fill 240ms var(--anatomy-ease);
+}
+
+.hx[data-armed] .hx-lamp {
+  fill: var(--hx-lamp-on);
+}
+
+.hx-front .it[data-gone] {
+  display: none;
+}
+
+.it[data-fade] {
+  transition: opacity 600ms var(--anatomy-ease);
+  opacity: 0;
+}
+
+/* selection: the picked assembly is the one lit accent, the rest step down */
+.hx-stage[data-focus] .it:not([data-on]):not([data-piece="stand"]) {
+  --anatomy-hi: var(--anatomy-mid);
+  --anatomy-mid: var(--anatomy-lo);
+}
+
+.it[data-on] {
+  --anatomy-hi: var(--anatomy-lit);
+  --anatomy-mid: var(--anatomy-hi);
+}
+
+.it[data-on] .iso-top,
+.it[data-on] .tb-shine {
+  fill: var(--anatomy-lit-top);
+}
+
+.it[data-on] .iso-shade,
+.it[data-on] .tb-body {
+  fill: var(--anatomy-lit-shade);
+}
+
+.it[data-on] [data-seamless] > .iso-shade {
+  stroke: var(--anatomy-lit-shade);
+}
+
+.it[data-on] [data-seamless] > .iso-top {
+  stroke: var(--anatomy-lit-top);
+}
+
+.hx-canopy .hx-gore {
+  fill: var(--anatomy-shade-3);
+  stroke: none;
+}
+
+.hx-controls {
+  position: absolute;
+  left: 20px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--anatomy-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--anatomy-muted);
+}
+
+.hx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 13px 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--anatomy-face);
+  color: var(--anatomy-strong);
+  font: inherit;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--hx-button-ring);
+  transition: background 200ms var(--anatomy-ease), transform 160ms var(--anatomy-ease);
+}
+
+.hx-btn:hover {
+  background: var(--hx-button-hover);
+}
+
+.hx-btn:active {
+  transform: scale(0.97);
+}
+
+.hx-btn:focus-visible {
+  outline: 1px solid var(--anatomy-muted);
+  outline-offset: 3px;
+}
+
+.hx-btn[data-on] {
+  color: var(--anatomy-text);
+}
+
+.hx-lamp-ui {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--hx-lamp-off);
+  transition: background 240ms var(--anatomy-ease), box-shadow 240ms var(--anatomy-ease);
+}
+
+.hx-launch[data-state="on"] .hx-lamp-ui {
+  background: var(--hx-lamp-on);
+  box-shadow: 0 0 10px 2px var(--hx-lamp-glow);
+}
+
+.hx-launch[data-state="armed"] .hx-lamp-ui {
+  background: var(--hx-lamp-armed);
+  box-shadow: 0 0 8px 1px var(--hx-lamp-glow);
+}
+
+.hx-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.hx-part {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--anatomy-muted);
+  font: 12.5px/1.3 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--hx-part-ring);
+  transition: color 160ms var(--anatomy-ease), background 160ms var(--anatomy-ease);
+}
+
+.hx-part:hover,
+.hx-part:focus-visible,
+.hx-part[data-on] {
+  color: var(--anatomy-strong);
+  background: var(--hx-part-hover);
+  outline: none;
+}
+
+.hx-num {
+  font-family: var(--anatomy-mono);
+  font-size: 10px;
+  color: var(--anatomy-muted);
+}
+
+.hx-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+svg .hx-live {
+  position: static;
+  clip-path: none;
+}
+
+@media (max-width: 640px) {
+  .hx .iso-plate {
+    padding: 48px 8px 92px;
+  }
+
+  .hx .iso-plate-corner[data-corner="readout"] {
+    bottom: 50px;
+    right: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hx-controls {
+    left: 12px;
+    bottom: 12px;
+    gap: 8px;
+    max-width: calc(100% - 24px);
+    flex-wrap: wrap;
+  }
+
+  .hx-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hx * {
+    transition: none !important;
+  }
+}
+
+.hx-back,
+.hx-rocket,
+.hx-anim {
+  transition: opacity 500ms var(--anatomy-ease);
+}
+
+.hx-stage[data-apart] .it[data-piece="cord"] {
+  opacity: 0;
+}
+
+.it[data-piece="cord"] {
+  transition: opacity 400ms var(--anatomy-ease);
+}
+
+.it[data-blown] {
+  opacity: 0;
+  transition: opacity 160ms var(--anatomy-ease);
+}
+
+.hx-flame-outer {
+  fill: var(--hx-flame-outer, #ff8a3c);
+  opacity: 0.85;
+}
+
+.hx-flame-core {
+  fill: var(--hx-flame-core, #ffe2a8);
+}
+
+[data-theme="light"] .hx {
+  --hx-flame-outer: #f07a1e;
+  --hx-flame-core: #ffd890;
+}
+
+.hx-stage[data-gl] .hx-flame-fb {
+  display: none;
+}

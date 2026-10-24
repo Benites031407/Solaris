@@ -1,0 +1,52 @@
+{
+  "name": "body_tube",
+  "display_name": null,
+  "stl_path": null,
+  "step_path": "/Users/ppak/GitHub/rocketsmith-dev/v042/cadsmith/step/body_tube.step",
+  "brep_path": null,
+  "bounding_box": {
+    "x": [
+      367.0,
+      "millimeter"
+    ],
+    "y": [
+      367.0,
+      "millimeter"
+    ],
+    "z": [
+      800.0,
+      "millimeter"
+    ]
+  },
+  "color": "#cccccc",
+  "cost": null,
+  "description": null,
+  "id": null,
+  "volume": [
+    6547685.72,
+    "millimeter ** 3"
+  ],
+  "surface_area": [
+    754634.06,
+    "millimeter ** 2"
+  ],
+  "center_of_mass": {
+    "x": [
+      -0.0,
+      "millimeter"
+    ],
+    "y": [
+      -0.0,
+      "millimeter"
+    ],
+    "z": [
+      500.584,
+      "millimeter"
+    ]
+  },
+  "mass": null,
+  "count": 1,
+  "source": null,
+  "generator_class": null,
+  "generator_params": null
+}

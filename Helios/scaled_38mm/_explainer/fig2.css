@@ -1,0 +1,25 @@
+.hx2-stage {
+  touch-action: pan-y;
+  cursor: grab;
+  outline: none;
+  border-radius: 8px;
+}
+
+.hx2-stage:focus-visible {
+  outline: 1px solid var(--anatomy-muted);
+  outline-offset: 6px;
+}
+
+.hx2-stage[data-drag] {
+  cursor: grabbing;
+}
+
+.hx2 .iso-plate {
+  padding: 48px 24px 60px;
+}
+
+@media (max-width: 640px) {
+  .hx2 .iso-plate {
+    padding: 48px 8px 92px;
+  }
+}

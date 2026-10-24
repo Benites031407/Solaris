@@ -1,0 +1,3 @@
+Canarinho: a 38 mm rocket designed entirely in parametric Python, printed in five sections that spigot into one 983 mm airframe — verified to 0.0001 mm across 244 stations before anything was ever printed.
+
+The clamshell nose opens on one servo turning one bar 30 degrees.
